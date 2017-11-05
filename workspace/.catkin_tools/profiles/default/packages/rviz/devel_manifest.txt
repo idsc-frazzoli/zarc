@@ -1,0 +1,4 @@
+rviz
+/home/odroid/zarc/workspace/devel/.private/rviz/share/rviz/cmake/rvizConfig.cmake /home/odroid/zarc/workspace/devel/share/rviz/cmake/rvizConfig.cmake
+/home/odroid/zarc/workspace/devel/.private/rviz/share/rviz/cmake/rvizConfig-version.cmake /home/odroid/zarc/workspace/devel/share/rviz/cmake/rvizConfig-version.cmake
+/home/odroid/zarc/workspace/devel/.private/rviz/lib/pkgconfig/rviz.pc /home/odroid/zarc/workspace/devel/lib/pkgconfig/rviz.pc

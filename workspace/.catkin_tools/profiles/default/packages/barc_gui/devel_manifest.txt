@@ -1,0 +1,6 @@
+barc_gui
+/home/odroid/zarc/workspace/devel/.private/barc_gui/share/barc_gui/cmake/barc_guiConfig-version.cmake /home/odroid/zarc/workspace/devel/share/barc_gui/cmake/barc_guiConfig-version.cmake
+/home/odroid/zarc/workspace/devel/.private/barc_gui/share/barc_gui/cmake/barc_guiConfig.cmake /home/odroid/zarc/workspace/devel/share/barc_gui/cmake/barc_guiConfig.cmake
+/home/odroid/zarc/workspace/devel/.private/barc_gui/lib/pkgconfig/barc_gui.pc /home/odroid/zarc/workspace/devel/lib/pkgconfig/barc_gui.pc
+/home/odroid/zarc/workspace/devel/.private/barc_gui/lib/python2.7/dist-packages/barc_gui/__init__.py /home/odroid/zarc/workspace/devel/lib/python2.7/dist-packages/barc_gui/__init__.py
+/home/odroid/zarc/workspace/devel/.private/barc_gui/bin/barc_gui /home/odroid/zarc/workspace/devel/bin/barc_gui
