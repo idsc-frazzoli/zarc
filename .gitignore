@@ -67,4 +67,4 @@ workspace/src/barc/rosbag/
 *.ropeproject/
 
 #log files created by catkin
-log/
+logs/
