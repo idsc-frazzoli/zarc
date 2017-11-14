@@ -16,7 +16,7 @@
 import rospy
 import time
 import os
-from barc.msg import ECU, Encoder
+from barc.msg import ECU, Encoder, Velocity
 from numpy import pi, cos, sin, eye, array, zeros, unwrap
 
 # input variables [default values]
@@ -85,7 +85,13 @@ def forward_vel():
 
     # topic subscriptions / publications
     rospy.Subscriber('encoder', Encoder, enc_callback)
-    state_pub = rospy.Publisher('forward_vel', Forward_Vel, queue_size=10)
+    state_pub = rospy.Publisher('forward_vel', Velocity, queue_size=10)
+
+    # set node rate
+    loop_rate = 50
+    # dt = 1.0 / loop_rate
+    rate = rospy.Rate(loop_rate)
+    t0 = time.time()
 
     while not rospy.is_shutdown():
         # publish forward velocity estimate
