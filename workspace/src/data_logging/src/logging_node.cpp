@@ -18,24 +18,22 @@
 
 volatile sig_atomic_t flag = 0;
 
-void signalCallback(int sig) { // can be called asynchronously
-    flag = 1; // set flag
+//not the greatest solution
+void signalCallback(int sig) {
+    flag = 1;
 }
 
 // create a name for the file output
 std::string filename = "exampleOutput.csv";
 
-// create some variables for demonstration
-int i;
-int A;
-int B;
-int C;
+
 
 struct DataVicon {
 
     double time;
     Eigen::Matrix<double, 3, 1> pos;
-    Eigen::Quaternion<double> q;
+    Eigen::Matrix<double,3,1> rot;
+
 };
 
 class ViconDataLogger {
@@ -51,7 +49,9 @@ public:
         DataVicon dataVicon;
         dataVicon.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
         dataVicon.pos = Eigen::Matrix<double, 3, 1>(msg->transform.translation.x, msg->transform.translation.y, msg->transform.translation.z);
-        dataVicon.q = Eigen::Quaternion<double>(msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z, msg->transform.rotation.w);
+        Eigen::Quaternion<double> q(msg->transform.rotation.w, msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z);
+        dataVicon.rot = q.toRotationMatrix().eulerAngles(0,1,2);
+
         m_buffer.push_back(dataVicon);
 
     }
@@ -69,24 +69,11 @@ public:
         m_file.open(filename);
 
         // write the file headers
-        m_file << "Column A" << "," << "Column B" << "Column C" << std::endl;
+        m_file << "t, x, y, z, angX, angY, angZ" <<  std::endl;
 
-        // i is just a variable to make numbers with in the file
-        i = 1;
-
-        // write data to the file
-        for (int counter = 0; counter < 10; counter++) {
-            // make some data
-            A = i + 5;
-            B = i + 10;
-            C = i + 20;
-
-            // write the data to the output file
-            m_file << A << "," << B << "," << C << std::endl;
-
-            // increase i
-            i = i * 5;
-        }
+//
+//        for (boost::circular_buffer<Data>::const_iterator it = buffer.begin(); it != buffer.end(); it++)
+//                std::cout << "(" << it->first << ", " << it->second << ")" << " ";
 
         // close the output file
         m_file.close();
