@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <ros/ros.h>
 
 volatile sig_atomic_t flag = 0;
 
@@ -26,13 +27,11 @@ void signalCallback(int sig) {
 // create a name for the file output
 std::string filename = "exampleOutput.csv";
 
-
-
 struct DataVicon {
 
     double time;
     Eigen::Matrix<double, 3, 1> pos;
-    Eigen::Matrix<double,3,1> rot;
+    Eigen::Matrix<double, 3, 1> rot;
 
 };
 
@@ -42,6 +41,7 @@ public:
     ViconDataLogger(int buffSize, std::string filename) :
             m_filename(filename) {
         m_buffer.set_capacity(buffSize);
+
     }
 
     void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg) {
@@ -50,7 +50,7 @@ public:
         dataVicon.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
         dataVicon.pos = Eigen::Matrix<double, 3, 1>(msg->transform.translation.x, msg->transform.translation.y, msg->transform.translation.z);
         Eigen::Quaternion<double> q(msg->transform.rotation.w, msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z);
-        dataVicon.rot = q.toRotationMatrix().eulerAngles(0,1,2);
+        dataVicon.rot = q.toRotationMatrix().eulerAngles(0, 1, 2);
 
         m_buffer.push_back(dataVicon);
 
@@ -58,6 +58,7 @@ public:
 
     void run() {
 
+        ros::spinOnce();
         if (flag)
             dumpToFile();
     }
@@ -69,11 +70,11 @@ public:
         m_file.open(filename);
 
         // write the file headers
-        m_file << "t, x, y, z, angX, angY, angZ" <<  std::endl;
+        m_file << "t, x, y, z, angX, angY, angZ" << std::endl;
 
-//
-//        for (boost::circular_buffer<Data>::const_iterator it = buffer.begin(); it != buffer.end(); it++)
-//                std::cout << "(" << it->first << ", " << it->second << ")" << " ";
+        for (boost::circular_buffer<DataVicon>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
+            m_file << it->time << ", " << it->pos(0) << ", " << it->pos(1) << ", " << it->pos(2) << ", " << it->rot(0) << ", " << it->rot(1) << ", "
+                    << it->rot(2) << std::endl;
 
         // close the output file
         m_file.close();
@@ -95,22 +96,18 @@ struct Data {
     int second;
 };
 
-void printBuffer(const boost::circular_buffer<Data>& buffer) {
-    for (boost::circular_buffer<Data>::const_iterator it = buffer.begin(); it != buffer.end(); it++)
-        std::cout << "(" << it->first << ", " << it->second << ")" << " ";
-    std::cout << std::endl << std::endl;
-}
-
 int main(int argc, char** argv) {
 
+
+    ViconDataLogger viconDataLogger(10, filename);
+
+    ros::init(argc, argv, "data_logger");
+    ros::NodeHandle n;
+    ros::Subscriber sub;
+    sub = n.subscribe("vicon/CAR/CAR", 1000, &ViconDataLogger::msgCallback, &viconDataLogger);
+
+
     signal(SIGINT, signalCallback);
-
-    boost::circular_buffer<Data> buffer(5);
-    ViconDataLogger viconDataLogger(5, filename);
-
-    for (int i = 0, j = 9; i < 10; i++, j--) {
-        buffer.push_back(Data(i, j));
-    }
 
     while (true) {
         viconDataLogger.run();
@@ -119,6 +116,6 @@ int main(int argc, char** argv) {
             break;
         }
     }
-
+    ros::shutdown();
     return 0;
 }
