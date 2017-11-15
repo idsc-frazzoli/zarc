@@ -46,26 +46,27 @@ public:
 
     void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg) {
 
+        static double timeOffset = -1;
+
+        if (timeOffset < 0)
+            timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+
         DataVicon dataVicon;
-        dataVicon.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+        dataVicon.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset;
         dataVicon.pos = Eigen::Matrix<double, 3, 1>(msg->transform.translation.x, msg->transform.translation.y, msg->transform.translation.z);
         Eigen::Quaternion<double> q(msg->transform.rotation.w, msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z);
         dataVicon.rot = q.toRotationMatrix().eulerAngles(0, 1, 2);
 
         m_buffer.push_back(dataVicon);
-
     }
 
     void run() {
 
         ros::spinOnce();
-        if (flag)
-            dumpToFile();
     }
 
     void dumpToFile() {
 
-        //TODO dump the actual files here
         // create and open the .csv file
         m_file.open(filename);
 
@@ -113,6 +114,7 @@ int main(int argc, char** argv) {
         viconDataLogger.run();
         if (flag) {
             std::cout << " \n Data logger node terminated. Saving measurements into: " << filename << std::endl;
+            viconDataLogger.dumpToFile();
             break;
         }
     }
