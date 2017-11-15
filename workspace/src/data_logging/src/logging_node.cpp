@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
 #include <ros/ros.h>
 
 volatile sig_atomic_t flag = 0;
@@ -63,6 +64,8 @@ public:
     void run() {
 
         ros::spinOnce();
+        ros::Duration(0.01).sleep();
+
     }
 
     void dumpToFile() {
@@ -100,12 +103,12 @@ struct Data {
 int main(int argc, char** argv) {
 
 
-    ViconDataLogger viconDataLogger(10, filename);
+    ViconDataLogger viconDataLogger(10000, filename);
 
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
     ros::Subscriber sub;
-    sub = n.subscribe("vicon/CAR/CAR", 1000, &ViconDataLogger::msgCallback, &viconDataLogger);
+    sub = n.subscribe("vicon/CAR/CAR", 1, &ViconDataLogger::msgCallback, &viconDataLogger);
 
 
     signal(SIGINT, signalCallback);
