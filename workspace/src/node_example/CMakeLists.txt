@@ -3,11 +3,9 @@ project(node_example)
 
 find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure message_generation roscpp rosgraph_msgs rospy std_msgs)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-
 add_message_files(
   FILES
-  NodeExampleData.msg
+  ECU.msg
 )
 
 generate_messages(
