@@ -17,9 +17,8 @@ import rospy
 import time
 import os
 from sensor_msgs.msg import Imu
-from barc.msg import ECU, Encoder, Velocity
+from barc.msg import ECU, Encoder, Velocity, Acceleration
 from numpy import pi, cos, sin, eye, array, zeros, unwrap
-from ekf import ekf
 from system_models import f_KinBkMdl, h_KinBkMdl
 from tf import transformations
 from numpy import unwrap
@@ -147,9 +146,17 @@ def forward_vel():
     t0 = time.time()
 
     while not rospy.is_shutdown():
+
         # publish forward velocity estimate
         velocity = v_meas
-        accel = (w_x, w_y, w_z, a_x, a_y, a_z)
+
+        accel = Acceleration()
+        accel.w_x = w_x
+        accel.w_y = w_y
+        accel.w_z = w_z
+        accel.a_x = a_x
+        accel.a_y = a_y
+        accel.a_z = a_z
 
         #rospy.loginfo(velocity)
 
