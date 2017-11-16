@@ -38,12 +38,13 @@ n_BR_prev = 0
 r_tire = 0.036  # radius from tire center to perimeter along magnets [m]
 dx_qrt = 2.0 * pi * r_tire / 4.0  # distance along quarter tire edge [m]
 
+
 # encoder measurement update
 def enc_callback(data):
+    dt_v_enc = 0.2
     global v, t0, dt_v_enc, v_meas
     global n_FL, n_FR, n_FL_prev, n_FR_prev
     global n_BL, n_BR, n_BL_prev, n_BR_prev
-
     n_FL = data.FL
     n_FR = data.FR
     n_BL = data.BL
@@ -57,14 +58,14 @@ def enc_callback(data):
     if dt >= dt_v_enc:
         # compute speed :  speed = distance / time
         v_FL = float(n_FL - n_FL_prev) * dx_qrt / dt
-        # v_FR = float(n_FR - n_FR_prev) * dx_qrt / dt
+        v_FR = float(n_FR - n_FR_prev) * dx_qrt / dt
         v_BL = float(n_BL - n_BL_prev) * dx_qrt / dt
         v_BR = float(n_BR - n_BR_prev) * dx_qrt / dt
 
         # Uncomment/modify according to your encoder setup
         # v_meas    = (v_FL + v_FR)/2.0
         # Modification for 3 working encoders
-        v_meas = (v_FL + v_BL + v_BR) / 3.0
+        v_meas = (v_FL + v_FR + v_BL + v_BR) / 4.0
         # Modification for bench testing (driven wheels only)
         # v = (v_BL + v_BR)/2.0
 
@@ -79,7 +80,7 @@ def enc_callback(data):
 # forward velocity node
 def forward_vel():
     global dt_v_enc
-    global v_meas, psi_meas
+    global v_meas
     # initialize node
     rospy.init_node('forward_vel', anonymous=True)
 
@@ -96,6 +97,7 @@ def forward_vel():
     while not rospy.is_shutdown():
         # publish forward velocity estimate
         velocity = v_meas
+        rospy.loginfo(velocity)
 
         # publish information
         state_pub.publish(velocity)
