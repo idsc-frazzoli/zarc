@@ -17,7 +17,7 @@ import rospy
 import time
 import os
 from barc.msg import ECU, Encoder, Velocity
-from numpy import pi, cos, sin, eye, array, zeros, unwrap
+from numpy import pi
 
 # input variables [default values]
 d_f = 0  # steering angle [deg]
@@ -35,13 +35,13 @@ n_FL_prev = 0
 n_FR_prev = 0
 n_BL_prev = 0
 n_BR_prev = 0
-r_tire = 0.036  # radius from tire center to perimeter along magnets [m]
+r_tire = 0.038  # radius from tire center to perimeter along magnets [m]
 dx_qrt = 2.0 * pi * r_tire / 4.0  # distance along quarter tire edge [m]
 
 
 # encoder measurement update
 def enc_callback(data):
-    dt_v_enc = 0.2
+    #dt_v_enc = 0.2
     global v, t0, dt_v_enc, v_meas
     global n_FL, n_FR, n_FL_prev, n_FR_prev
     global n_BL, n_BR, n_BL_prev, n_BR_prev
