@@ -97,7 +97,7 @@ def forward_vel():
     while not rospy.is_shutdown():
         # publish forward velocity estimate
         velocity = v_meas
-        rospy.loginfo(velocity)
+        #rospy.loginfo(velocity)
 
         # publish information
         state_pub.publish(velocity)

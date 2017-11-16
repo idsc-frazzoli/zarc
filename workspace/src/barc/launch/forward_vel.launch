@@ -15,7 +15,4 @@
     <!-- PWM GENERATOR -->
     <node pkg="node_example" type="pytalker.py" name="pwm_generator" />
 
-    <!-- RECONFIGURE GUI -->
-    <node name="reconfigure_gui" pkg="dynamic_reconfigure" type="reconfigure_gui" />
-
 </launch>
