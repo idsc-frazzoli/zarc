@@ -32,6 +32,107 @@ std::string filename = "exampleOutput.csv";
 
 //TODO clean up this shit
 
+
+
+
+//TODO add a time header here
+class VelDataLogger {
+
+public:
+    VelDataLogger(int buffSize, std::string filename) :
+            m_filename("Vel" + filename) {
+        m_buffer.set_capacity(buffSize);
+
+    }
+
+    void msgCallback(barc::Velocity::ConstPtr msg) {
+
+//        static double timeOffset = -1;
+//
+//        if (timeOffset < 0)
+//            timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+
+
+        m_buffer.push_back(msg->velocity);
+    }
+
+    void run() {
+
+    }
+
+    void dumpToFile() {
+
+        // create and open the .csv file
+        m_file.open("filename");
+
+
+        // write the file headers
+        m_file << "vel_enc" << std::endl;
+
+        for (boost::circular_buffer<double>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
+            m_file << (*it) << ", " << std::endl;
+
+        // close the output file
+        m_file.close();
+    }
+
+private:
+    boost::circular_buffer<double> m_buffer;
+    std::string m_filename;
+    std::ofstream m_file;
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //TODO add a time header here
 class ImuDataLogger {
 
@@ -70,13 +171,11 @@ public:
         // create and open the .csv file
         m_file.open("filename");
 
-        // write the file headers
-        m_file << "wx, wy, wz, ax, ay, az" << std::endl;
 
         // write the file headers
         m_file << "w_x, w_y, q_z, a_x, a_y, a_z" << std::endl;
 
-        for (boost::circular_buffer<Eigen::Matrix<double, 6, 1>>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
+        for (boost::circular_buffer<Eigen::Matrix<double, 6, 1> >::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
             m_file << (*it)(0) << ", " << (*it)(1) << ", " << (*it)(2) << ", " << (*it)(3) << ", " << (*it)(4) << ", " << (*it)(5) << ", " << std::endl;
 
         // close the output file
@@ -188,11 +287,14 @@ int main(int argc, char** argv) {
     int buffSize = 10000;
     ViconDataLogger viconDataLogger(buffSize, filename);
     ImuDataLogger   imuDataLogger(buffSize, filename);
+    VelDataLogger   velDataLogger(buffSize, filename);
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
-    ros::Subscriber sub, sub2;
+    ros::Subscriber sub, sub2, sub3;
     sub = n.subscribe("vicon/CAR/CAR", 1, &ViconDataLogger::msgCallback, &viconDataLogger);
     sub2 = n.subscribe("acceleration", 1, &ImuDataLogger::msgCallback, &imuDataLogger);
+    sub3 = n.subscribe("forward_vel", 1, &VelDataLogger::msgCallback, &velDataLogger);
+
 
     signal(SIGINT, signalCallback);
 
@@ -202,6 +304,7 @@ int main(int argc, char** argv) {
             std::cout << " \n Data logger node terminated. Saving measurements into: " << filename << std::endl;
             viconDataLogger.dumpToFile();
             imuDataLogger.dumpToFile();
+            velDataLogger.dumpToFile();
             break;
         }
         ros::Duration(0.01).sleep();
