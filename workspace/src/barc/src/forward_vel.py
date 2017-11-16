@@ -81,6 +81,10 @@ def enc_callback(data):
 def forward_vel():
     global dt_v_enc
     global v_meas
+
+    # get encoder parameters
+    dt_v_enc = rospy.get_param("forward_vel/dt_v_enc") # time interval to compute v_x from encoders
+    
     # initialize node
     rospy.init_node('forward_vel', anonymous=True)
 
