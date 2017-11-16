@@ -4,6 +4,7 @@ project(data_logger)
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     geometry_msgs
+    barc
 )
 
 find_package(Boost REQUIRED)
@@ -12,8 +13,10 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(CATKIN_DEPENDS 
     roscpp
-    geometry_msgs 
+    geometry_msgs
+    barc 
 )
+
 
 
 include_directories(src 
