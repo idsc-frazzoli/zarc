@@ -1,5 +1,0 @@
-data_logging
-/home/jelavice/Documents/zarc/workspace/devel/.private/data_logger/share/data_logger/cmake/data_loggerConfig.cmake /home/jelavice/Documents/zarc/workspace/devel/share/data_logger/cmake/data_loggerConfig.cmake
-/home/jelavice/Documents/zarc/workspace/devel/.private/data_logger/share/data_logger/cmake/data_loggerConfig-version.cmake /home/jelavice/Documents/zarc/workspace/devel/share/data_logger/cmake/data_loggerConfig-version.cmake
-/home/jelavice/Documents/zarc/workspace/devel/.private/data_logger/lib/data_logger/logging_node /home/jelavice/Documents/zarc/workspace/devel/lib/data_logger/logging_node
-/home/jelavice/Documents/zarc/workspace/devel/.private/data_logger/lib/pkgconfig/data_logger.pc /home/jelavice/Documents/zarc/workspace/devel/lib/pkgconfig/data_logger.pc

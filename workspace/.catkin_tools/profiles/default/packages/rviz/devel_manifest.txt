@@ -1,4 +1,0 @@
-rviz
-/home/jelavice/Documents/zarc/workspace/devel/.private/rviz/share/rviz/cmake/rvizConfig.cmake /home/jelavice/Documents/zarc/workspace/devel/share/rviz/cmake/rvizConfig.cmake
-/home/jelavice/Documents/zarc/workspace/devel/.private/rviz/share/rviz/cmake/rvizConfig-version.cmake /home/jelavice/Documents/zarc/workspace/devel/share/rviz/cmake/rvizConfig-version.cmake
-/home/jelavice/Documents/zarc/workspace/devel/.private/rviz/lib/pkgconfig/rviz.pc /home/jelavice/Documents/zarc/workspace/devel/lib/pkgconfig/rviz.pc

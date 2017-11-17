@@ -1,5 +1,0 @@
-rqt_common_plugins/rqt_srv
-/home/jelavice/Documents/zarc/workspace/devel/.private/rqt_srv/share/rqt_srv/cmake/rqt_srvConfig-version.cmake /home/jelavice/Documents/zarc/workspace/devel/share/rqt_srv/cmake/rqt_srvConfig-version.cmake
-/home/jelavice/Documents/zarc/workspace/devel/.private/rqt_srv/share/rqt_srv/cmake/rqt_srvConfig.cmake /home/jelavice/Documents/zarc/workspace/devel/share/rqt_srv/cmake/rqt_srvConfig.cmake
-/home/jelavice/Documents/zarc/workspace/devel/.private/rqt_srv/lib/python2.7/dist-packages/rqt_srv/__init__.py /home/jelavice/Documents/zarc/workspace/devel/lib/python2.7/dist-packages/rqt_srv/__init__.py
-/home/jelavice/Documents/zarc/workspace/devel/.private/rqt_srv/lib/pkgconfig/rqt_srv.pc /home/jelavice/Documents/zarc/workspace/devel/lib/pkgconfig/rqt_srv.pc
