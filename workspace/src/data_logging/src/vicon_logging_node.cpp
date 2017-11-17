@@ -74,7 +74,7 @@ public:
     void dumpToFile() {
 
         // create and open the .csv file
-        m_file.open(filename);
+        m_file.open(m_filename);
 
         // write the file headers
         m_file << "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" << std::endl;

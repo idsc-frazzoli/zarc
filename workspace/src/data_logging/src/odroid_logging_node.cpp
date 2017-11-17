@@ -69,7 +69,7 @@ public:
     void dumpToFile() {
 
         // create and open the .csv file
-        m_file.open("filename");
+        m_file.open(m_filename);
 
         // write the file headers
         m_file << "time, vel_enc" << std::endl;
@@ -136,7 +136,7 @@ public:
     void dumpToFile() {
 
         // create and open the .csv file
-        m_file.open("filename");
+        m_file.open(m_filename);
 
         // write the file headers
         m_file << "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw " << std::endl;
