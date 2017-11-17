@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wfatal-errors")
+
 
 catkin_package(CATKIN_DEPENDS 
     roscpp
