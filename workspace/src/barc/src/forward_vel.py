@@ -16,25 +16,14 @@
 import rospy
 import time
 import os
-from sensor_msgs.msg import Imu
-from barc.msg import ECU, Encoder, Velocity, Acceleration, Time
+from barc.msg import ECU, Encoder, Velocity
 from numpy import pi, cos, sin, eye, array, zeros, unwrap
-from system_models import f_KinBkMdl, h_KinBkMdl
 from tf import transformations
 from numpy import unwrap
 
 # input variables [default values]
 d_f = 0  # steering angle [deg]
 acc = 0  # acceleration [m/s]
-
-# raw measurement variables
-yaw_prev = 0
-(roll, pitch, yaw, a_x, a_y, a_z, w_x, w_y, w_z) = zeros(9)
-yaw_prev    = 0
-yaw_local   = 0
-read_yaw0   = False
-psi         = 0
-psi_meas    = 0
 
 # from encoder
 v = 0
@@ -50,39 +39,6 @@ n_BL_prev = 0
 n_BR_prev = 0
 r_tire = 0.038  # radius from tire center to perimeter along magnets [m]
 dx_qrt = 2.0 * pi * r_tire / 4.0  # distance along quarter tire edge [m]
-
-
-# imu measurement update
-def imu_callback(data):
-    # units: [rad] and [rad/s]
-    global roll, pitch, yaw, a_x, a_y, a_z, w_x, w_y, w_z
-    global yaw_prev, yaw0, read_yaw0, yaw_local, psi_meas
-
-    # get orientation from quaternion data, and convert to roll, pitch, yaw
-    # extract angular velocity and linear acceleration data
-    ori = data.orientation
-    quaternion = (ori.x, ori.y, ori.z, ori.w)
-    (roll, pitch, yaw) = transformations.euler_from_quaternion(quaternion)
-
-    # save initial measurements
-    if not read_yaw0:
-        read_yaw0 = True
-        yaw_prev = yaw
-        yaw0 = yaw
-
-    # unwrap measurement
-    yaw = unwrap(array([yaw_prev, yaw]), discont=pi)[1]
-    yaw_prev = yaw
-    yaw_local = yaw - yaw0
-    psi_meas = yaw_local
-
-    # extract angular velocity and linear acceleration data
-    w_x = data.angular_velocity.x
-    w_y = data.angular_velocity.y
-    w_z = data.angular_velocity.z
-    a_x = data.linear_acceleration.x
-    a_y = data.linear_acceleration.y
-    a_z = data.linear_acceleration.z
 
 # encoder measurement update
 def enc_callback(data):
@@ -134,11 +90,8 @@ def forward_vel():
     rospy.init_node('forward_vel', anonymous=True)
 
     # topic subscriptions / publications
-    rospy.Subscriber('imu/data', Imu, imu_callback)
     rospy.Subscriber('encoder', Encoder, enc_callback)
     vel_pub = rospy.Publisher('forward_vel', Velocity, queue_size=10)
-    acc_pub = rospy.Publisher('forward_vel', Acceleration, queue_size=10)
-    time_pub = rospy.Publisher('forward_vel', Time, queue_size=10)
 
     # set node rate
     loop_rate = 50
@@ -149,24 +102,14 @@ def forward_vel():
     while not rospy.is_shutdown():
 
         # publish messages
-        velocity = v_meas
-
-        accel = Acceleration()
-        accel.w_x = w_x
-        accel.w_y = w_y
-        accel.w_z = w_z
-        accel.a_x = a_x
-        accel.a_y = a_y
-        accel.a_z = a_z
-
-        t = time.time()
+        msg = Velocity()
+        msg.velocity = v_meas
+        msg.time = time.time()
 
         #rospy.loginfo(velocity)
 
         # publish information
-        acc_pub.publish(accel)
-        vel_pub.publish(velocity)
-        time_pub.publish(t)
+        vel_pub.publish(msg)
 
         # wait
         rate.sleep()

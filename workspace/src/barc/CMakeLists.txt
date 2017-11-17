@@ -52,8 +52,6 @@ add_message_files(
    ECU.msg
    Z_KinBkMdl.msg
    Velocity.msg
-   Acceleration.msg
-   Time.msg
 )
 
 ## Generate services in the 'srv' folder
