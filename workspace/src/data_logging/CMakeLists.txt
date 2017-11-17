@@ -28,8 +28,14 @@ ${EIGEN3_INCLUDE_DIR})
 
 
 
-add_executable(logging_node src/logging_node.cpp)
-target_link_libraries(logging_node
+add_executable(vicon_logging_node src/vicon_logging_node.cpp)
+target_link_libraries(vicon_logging_node
+    ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
+
+add_executable(odroid_logging_node src/odroid_logging_node.cpp)
+target_link_libraries(odroid_logging_node
     ${catkin_LIBRARIES}
     ${Boost_LIBRARIES}
 )
