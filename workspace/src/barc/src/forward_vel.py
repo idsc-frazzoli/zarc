@@ -17,7 +17,7 @@ import rospy
 import time
 import os
 from sensor_msgs.msg import Imu
-from barc.msg import ECU, Encoder, Velocity, Acceleration
+from barc.msg import ECU, Encoder, Velocity, Acceleration, Time
 from numpy import pi, cos, sin, eye, array, zeros, unwrap
 from system_models import f_KinBkMdl, h_KinBkMdl
 from tf import transformations
@@ -137,17 +137,18 @@ def forward_vel():
     rospy.Subscriber('imu/data', Imu, imu_callback)
     rospy.Subscriber('encoder', Encoder, enc_callback)
     vel_pub = rospy.Publisher('forward_vel', Velocity, queue_size=10)
-    acc_pub = rospy.Publisher('acceleration', Acceleration, queue_size=10)
+    acc_pub = rospy.Publisher('forward_vel', Acceleration, queue_size=10)
+    time_pub = rospy.Publisher('forward_vel', Time, queue_size=10)
 
     # set node rate
     loop_rate = 50
     # dt = 1.0 / loop_rate
     rate = rospy.Rate(loop_rate)
-    t0 = time.time()
+    #t0 = time.time()
 
     while not rospy.is_shutdown():
 
-        # publish forward velocity estimate
+        # publish messages
         velocity = v_meas
 
         accel = Acceleration()
@@ -158,11 +159,14 @@ def forward_vel():
         accel.a_y = a_y
         accel.a_z = a_z
 
+        t = time.time()
+
         #rospy.loginfo(velocity)
 
         # publish information
         acc_pub.publish(accel)
         vel_pub.publish(velocity)
+        time_pub.publish(t)
 
         # wait
         rate.sleep()
