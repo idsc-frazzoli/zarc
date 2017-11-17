@@ -68,3 +68,8 @@ workspace/src/barc/rosbag/
 
 #log files created by catkin
 logs/
+build/
+devel/
+share/
+.catkin_tools/
+.catkin_workspace/
