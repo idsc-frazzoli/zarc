@@ -11,6 +11,7 @@
 #include <string>
 #include <boost/circular_buffer.hpp>
 #include <geometry_msgs/TransformStamped.h>
+#include <sensor_msgs/Imu.h>
 #include <Eigen/Dense>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +19,6 @@
 #include <unistd.h>
 #include <ros/ros.h>
 #include "barc/Velocity.h"
-#include "barc/Acceleration.h"
 
 volatile sig_atomic_t flag = 0;
 
@@ -33,6 +33,11 @@ std::string filename = "exampleOutput.csv";
 //TODO clean up this shit
 
 
+
+struct VelData {
+  double time;
+  double vel;
+};
 
 
 //TODO add a time header here
@@ -53,7 +58,12 @@ public:
 //            timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
 
 
-        m_buffer.push_back(msg->velocity);
+        VelData velData;
+
+        velData.time = msg->time;
+        velData.vel = msg->velocity;
+
+        m_buffer.push_back(velData);
     }
 
     void run() {
@@ -67,22 +77,21 @@ public:
 
 
         // write the file headers
-        m_file << "vel_enc" << std::endl;
+        m_file << "time, vel_enc" << std::endl;
 
-        for (boost::circular_buffer<double>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-            m_file << (*it) << ", " << std::endl;
+        for (boost::circular_buffer<VelData>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
+            m_file << it->time << ", " << it->vel << std::endl;
 
         // close the output file
         m_file.close();
     }
 
 private:
-    boost::circular_buffer<double> m_buffer;
+    boost::circular_buffer<VelData> m_buffer;
     std::string m_filename;
     std::ofstream m_file;
 
 };
-
 
 
 
@@ -143,7 +152,7 @@ public:
 
     }
 
-    void msgCallback(barc::Acceleration::ConstPtr msg) {
+    void msgCallback(sensor_msgs::Imu::ConstPtr msg) {
 
 //        static double timeOffset = -1;
 //
@@ -152,12 +161,7 @@ public:
 
         Eigen::Matrix<double, 6, 1> temp;
 
-        temp(0) = msg->w_x;
-        temp(1) = msg->w_y;
-        temp(2) = msg->w_z;
-        temp(3) = msg->a_x;
-        temp(4) = msg->a_y;
-        temp(5) = msg->a_z;
+
 
         m_buffer.push_back(temp);
     }
@@ -292,7 +296,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
     ros::Subscriber sub, sub2, sub3;
     sub = n.subscribe("vicon/CAR/CAR", 1, &ViconDataLogger::msgCallback, &viconDataLogger);
-    sub2 = n.subscribe("acceleration", 1, &ImuDataLogger::msgCallback, &imuDataLogger);
+    sub2 = n.subscribe("imu/Data", 1, &ImuDataLogger::msgCallback, &imuDataLogger);
     sub3 = n.subscribe("forward_vel", 1, &VelDataLogger::msgCallback, &velDataLogger);
 
 
