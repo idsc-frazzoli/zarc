@@ -1,36 +1,25 @@
 /*
- * logging_node.cpp
+ * ViconDataLogger.h
  *
- *  Created on: Nov 15, 2017
+ *  Created on: Nov 21, 2017
  *      Author: jelavice
  */
 
-// inlcude iostream and string libraries
+#ifndef VICON_DATA_LOGGER_H_
+#define VICON_DATA_LOGGER_H_
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <boost/circular_buffer.hpp>
-#include <geometry_msgs/TransformStamped.h>
-#include <sensor_msgs/Imu.h>
 #include <Eigen/Dense>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
 #include <ros/ros.h>
-#include "barc/Velocity.h"
+#include "logger.h"
 
-volatile sig_atomic_t flag = 0;
-
-//not the greatest solution
-void signalCallback(int sig) {
-    flag = 1;
-}
-
-// create a name for the file output
-std::string filename = "exampleOutput.csv";
-
-//TODO clean up this shit
 
 
 
@@ -42,14 +31,16 @@ struct DataVicon {
     Eigen::Quaternion<double> q;
 };
 
-class ViconDataLogger {
+class ViconDataLogger : public DataLogger {
 
 public:
-    ViconDataLogger(int buffSize, std::string filename) :
+    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n ) :
             m_filename("Vicon_" + filename) {
         m_buffer.set_capacity(buffSize);
-
+        m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, &viconDataLogger)
     }
+
+    virtual ~ViconDataLogger(){}
 
     void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg) {
 
@@ -67,11 +58,8 @@ public:
         m_buffer.push_back(dataVicon);
     }
 
-    void run() {
 
-    }
-
-    void dumpToFile() {
+    void dumpToFile() override {
 
         // create and open the .csv file
         m_file.open(m_filename);
@@ -91,28 +79,10 @@ private:
     boost::circular_buffer<DataVicon> m_buffer;
     std::string m_filename;
     std::ofstream m_file;
+    ros::Subscriber m_sub;
+
 
 };
 
-int main(int argc, char** argv) {
 
-    int buffSize = 10000;
-    ros::init(argc, argv, "vicon_data_logger");
-    ros::NodeHandle n;
-    ros::Subscriber sub;
-    ViconDataLogger viconDataLogger(buffSize, filename);
-
-    signal(SIGINT, signalCallback);
-
-    while (true) {
-        ros::spinOnce();
-        if (flag) {
-            std::cout << " \n Data logger node terminated. Saving measurements into: " << filename << std::endl;
-            viconDataLogger.dumpToFile();
-            break;
-        }
-        ros::Duration(0.01).sleep();
-    }
-    ros::shutdown();
-    return 0;
-}
+#endif /* VICON_DATA_LOGGER_H_ */
