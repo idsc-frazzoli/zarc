@@ -27,7 +27,11 @@ acc = 0  # acceleration [m/s]
 
 # from encoder
 v = 0
-v_meas = 0
+#v_meas = 0
+v_FL = 0
+v_FR = 0
+v_BL = 0
+v_BR = 0
 t0 = time.time()
 n_FL = 0  # counts in the front left tire
 n_FR = 0  # counts in the front right tire
@@ -43,9 +47,10 @@ dx_qrt = 2.0 * pi * r_tire / 4.0  # distance along quarter tire edge [m]
 # encoder measurement update
 def enc_callback(data):
     #dt_v_enc = 0.2
-    global v, t0, dt_v_enc, v_meas
+    global v, t0, dt_v_enc
     global n_FL, n_FR, n_FL_prev, n_FR_prev
     global n_BL, n_BR, n_BL_prev, n_BR_prev
+    global v_FL, v_FR, v_BL, v_BR
     n_FL = data.FL
     n_FR = data.FR
     n_BL = data.BL
@@ -66,7 +71,7 @@ def enc_callback(data):
         # Uncomment/modify according to your encoder setup
         # v_meas    = (v_FL + v_FR)/2.0
         # Modification for 3 working encoders
-        v_meas = (v_FL + v_FR + v_BL + v_BR) / 4.0
+        # v_meas = (v_FL + v_FR + v_BL + v_BR) / 4.0
         # Modification for bench testing (driven wheels only)
         # v = (v_BL + v_BR)/2.0
 
@@ -103,7 +108,10 @@ def forward_vel():
 
         # publish messages
         msg = Velocity()
-        msg.velocity = v_meas
+        msg.FL = v_FL
+        msg.FR = v_FR
+        msg.BL = v_BL
+        msg.BR = v_BR
         msg.time = time.time()
 
         #rospy.loginfo(velocity)
