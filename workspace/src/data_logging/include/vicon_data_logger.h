@@ -34,10 +34,10 @@ struct DataVicon {
 class ViconDataLogger : public DataLogger {
 
 public:
-    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n ) :
+    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize ) :
             m_filename("Vicon_" + filename) {
         m_buffer.set_capacity(buffSize);
-        m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, &viconDataLogger)
+        m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, this)
     }
 
     virtual ~ViconDataLogger(){}
