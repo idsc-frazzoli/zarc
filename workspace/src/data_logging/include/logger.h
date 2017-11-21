@@ -10,16 +10,14 @@
 
 #include <iostream>
 
-
 class DataLogger {
 
 public:
     virtual void dumpToFile() = 0;
 
-    virtual ~DataLogger() {}
+    virtual ~DataLogger() {
+    }
 
 };
-
-
 
 #endif /* LOGGER_H_ */
