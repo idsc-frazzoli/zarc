@@ -21,22 +21,28 @@ catkin_package(CATKIN_DEPENDS
 
 
 
-include_directories(src 
+include_directories(include 
+src 
 ${catkin_INCLUDE_DIRS} 
 ${Boost_INCLUDE_DIRS} 
 ${EIGEN3_INCLUDE_DIR})
 
 
 
-add_executable(vicon_logging_node src/vicon_logging_node.cpp)
-target_link_libraries(vicon_logging_node
+#add_executable(vicon_logging_node src/vicon_logging_node.cpp)
+#target_link_libraries(vicon_logging_node
+#    ${catkin_LIBRARIES}
+#    ${Boost_LIBRARIES}
+#)
+#
+#add_executable(odroid_logging_node src/odroid_logging_node.cpp)
+#target_link_libraries(odroid_logging_node
+#    ${catkin_LIBRARIES}
+#    ${Boost_LIBRARIES}
+#)
+
+add_executable(logger_node src/logger_node.cpp)
+target_link_libraries(logger_node
     ${catkin_LIBRARIES}
     ${Boost_LIBRARIES}
 )
-
-add_executable(odroid_logging_node src/odroid_logging_node.cpp)
-target_link_libraries(odroid_logging_node
-    ${catkin_LIBRARIES}
-    ${Boost_LIBRARIES}
-)
-

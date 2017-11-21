@@ -29,7 +29,7 @@ public:
     EncDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize ) :
             m_filename("Vel" + filename) {
         m_buffer.set_capacity(buffSize);
-        m_sub = n.subscribe("forward_vel", queueSize, &EncDataLogger::msgCallback, this)
+        m_sub = n.subscribe(topic, queueSize, &EncDataLogger::msgCallback, this);
 
     }
 

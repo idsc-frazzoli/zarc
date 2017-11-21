@@ -16,7 +16,7 @@ class DataLogger {
 public:
     virtual void dumpToFile() = 0;
 
-    virtual void ~DataLogger() {}
+    virtual ~DataLogger() {}
 
 };
 
