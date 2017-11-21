@@ -43,10 +43,11 @@ n_BL_prev = 0
 n_BR_prev = 0
 r_tire = 0.038  # radius from tire center to perimeter along magnets [m]
 dx_qrt = 2.0 * pi * r_tire / 4.0  # distance along quarter tire edge [m]
+dt_v_enc = 0.2
 
 # encoder measurement update
 def enc_callback(data):
-    #dt_v_enc = 0.2
+    # dt_v_enc = 0.2
     global v, t0, dt_v_enc
     global n_FL, n_FR, n_FL_prev, n_FR_prev
     global n_BL, n_BR, n_BL_prev, n_BR_prev
@@ -86,11 +87,10 @@ def enc_callback(data):
 # forward velocity node
 def forward_vel():
     global dt_v_enc
-    global v_meas
 
     # get encoder parameters
-    dt_v_enc = rospy.get_param("forward_vel/dt_v_enc") # time interval to compute v_x from encoders
-    
+    #dt_v_enc = rospy.get_param("forward_vel/dt_v_enc") # time interval to compute v_x from encoders
+
     # initialize node
     rospy.init_node('forward_vel', anonymous=True)
 
