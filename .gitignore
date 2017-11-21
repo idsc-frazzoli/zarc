@@ -73,3 +73,4 @@ devel/
 share/
 .catkin_tools/
 .catkin_workspace/
+*.csv
