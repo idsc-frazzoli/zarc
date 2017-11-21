@@ -8,7 +8,7 @@
 #include "imu_data_logger.h"
 
 ImuDataLogger::ImuDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize) :
-        m_filename("Imu" + filename) {
+        m_filename(filename) {
     m_buffer.set_capacity(buffSize);
     m_sub = n.subscribe(topic, queueSize, &ImuDataLogger::msgCallback, this);
 

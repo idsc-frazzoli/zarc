@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <ros/ros.h>
+#include <boost/filesystem.hpp>
 
 #include "encoder_data_logger.h"
 #include "imu_data_logger.h"
@@ -39,10 +40,30 @@ void signalCallback(int sig) {
     flag = 1;
 }
 
-// create a name for the file output
-std::string filename = "exampleOutput.csv";
+
+//don't need this unless I want to do some dynamic loading
+//class LoggerFactory {
+//
+//public:
+//
+//    enum LoggerType {
+//        VICON,
+//        IMU,
+//        ENCODER
+//    };
+//
+//};
 
 
+
+
+//#include <libgen.h>
+//
+//ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+//const char *path;
+//if (count != -1) {
+//    path = dirname(result);
+//}
 
 int main(int argc, char** argv) {
 
@@ -50,17 +71,19 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
 
-    ViconDataLogger viconDataLogger(buffSize, filename,  "vicon/CAR/CAR", n, 1 );
-    ImuDataLogger imuDataLogger(buffSize, filename,  "imu/data", n, 1000 );
-    EncDataLogger encDataLogger(buffSize, filename,  "forward_vel", n, 1000 );
+    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput.csv",  "vicon/CAR/CAR", n, 1 );
+    ImuDataLogger imuDataLogger(buffSize, "imuExampleOutput.csv",  "imu/data", n, 1000 );
+    EncDataLogger encDataLogger(buffSize, "encExampleOutput.csv",  "forward_vel", n, 1000 );
 
+    //current working directory
+    boost::filesystem::path full_path( boost::filesystem::current_path() );
 
     signal(SIGINT, signalCallback);
 
     while (true) {
         ros::spinOnce();
         if (flag) {
-            std::cout << " \n Data logger node terminated. Saving measurements into: " << filename << std::endl;
+            std::cout << " \n Data logger node terminated. Saving measurements into: " << full_path << std::endl;
             viconDataLogger.dumpToFile();
             imuDataLogger.dumpToFile();
             encDataLogger.dumpToFile();

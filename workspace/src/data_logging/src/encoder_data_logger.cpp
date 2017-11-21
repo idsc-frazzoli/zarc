@@ -8,7 +8,7 @@
 #include "encoder_data_logger.h"
 
     EncDataLogger::EncDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize ) :
-    m_filename("Enc" + filename) {
+    m_filename(filename) {
         m_buffer.set_capacity(buffSize);
         m_sub = n.subscribe(topic, queueSize, &EncDataLogger::msgCallback, this);
 
