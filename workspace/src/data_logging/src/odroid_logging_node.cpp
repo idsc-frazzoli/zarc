@@ -109,13 +109,14 @@ public:
 
     void msgCallback(sensor_msgs::Imu::ConstPtr msg) {
 
-//        static double timeOffset = -1;
-//
-//        if (timeOffset < 0)
-//            timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+        static double timeOffset = -1;
+
+        if (timeOffset < 0)
+            timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
 
         ImuData imuData;
-
+	//std::cout << "received imu message" << std::endl;
+	imuData.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset;
         imuData.angVel(0) = msg->angular_velocity.x;
         imuData.angVel(1) = msg->angular_velocity.y;
         imuData.angVel(2) = msg->angular_velocity.z;
@@ -164,7 +165,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "odroid_data_logger");
     ros::NodeHandle n;
     ros::Subscriber sub, sub2;
-    sub = n.subscribe("imu/Data", 1, &ImuDataLogger::msgCallback, &imuDataLogger);
+    sub = n.subscribe("imu/data", 1, &ImuDataLogger::msgCallback, &imuDataLogger);
     sub2 = n.subscribe("forward_vel", 1, &VelDataLogger::msgCallback, &velDataLogger);
 
     signal(SIGINT, signalCallback);
