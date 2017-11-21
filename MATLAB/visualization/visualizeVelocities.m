@@ -43,15 +43,46 @@ for i=2:N
     dyB(i-1) = temp(2);
 end
 
+d1 = designfilt('lowpassiir','FilterOrder',12, ...
+    'HalfPowerFrequency',0.15,'DesignMethod','butter');
+
+%filter the data
+
+yaw_f = filtfilt(d1,yaw);
+dxB_f = filtfilt(d1,dxB);
+dyB_f = filtfilt(d1,dyB);
+d2 = designfilt('lowpassiir','FilterOrder',12, ...
+    'HalfPowerFrequency',0.05,'DesignMethod','butter');
+r_f = filtfilt(d2,r);
+
+
+
 subplot(3,1,1)
 plot(t,yaw,'Linewidth', 2);
 hold on
 subplot(3,1,2)
-plot(t(1:end-1),dxB,'Linewidth', 2);
+plot(t(1:end-1),dxB_f,'Linewidth', 2);
 hold on
-plot(t(1:end-1),dyB,'Linewidth', 2);
+plot(t(1:end-1),dyB_f,'Linewidth', 2);
 legend('V_x', 'V_y')
 subplot(3,1,3)
-plot(t(1:end-1), r);
+plot(t(1:end-1), r_f);
 hold on
 
+% figure
+% subplot(3,1,1)
+% plot(t,yaw,'Linewidth', 2);
+% hold on
+% plot(t,yaw_f,'Linewidth', 2);
+% subplot(3,1,2)
+% plot(t(1:end-1),dxB,'Linewidth', 2);
+% hold on
+% plot(t(1:end-1),dyB,'Linewidth', 2);
+% plot(t(1:end-1),dxB_f,'Linewidth', 2);
+% grid on
+% plot(t(1:end-1),dyB_f,'Linewidth', 2);
+% legend('V_x', 'V_y')
+% subplot(3,1,3)
+% plot(t(1:end-1), r);
+% hold on
+% plot(t(1:end-1), r_f);
