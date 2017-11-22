@@ -38,16 +38,18 @@ void ImuDataLogger::msgCallback(sensor_msgs::Imu::ConstPtr msg) {
 
 void ImuDataLogger::dumpToFile() {
 
+    std::ofstream file;
+
     // create and open the .csv file
-    m_file.open(m_filename);
+    file.open(m_filename);
 
     // write the file headers
-    m_file << "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw " << std::endl;
+    file << "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw " << std::endl;
 
     for (boost::circular_buffer<ImuData>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-        m_file << it->time << ", " << it->linAcc(0) << ", " << it->linAcc(1) << ", " << it->linAcc(2) << ", " << it->angVel(0) << ", " << it->angVel(1) << ", "
+        file << it->time << ", " << it->linAcc(0) << ", " << it->linAcc(1) << ", " << it->linAcc(2) << ", " << it->angVel(0) << ", " << it->angVel(1) << ", "
                 << it->angVel(2) << ", " << it->q.x() << ", " << it->q.y() << ", " << it->q.z() << ", " << it->q.w() << std::endl;
 
     // close the output file
-    m_file.close();
+    file.close();
 }

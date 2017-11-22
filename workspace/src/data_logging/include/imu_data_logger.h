@@ -43,7 +43,6 @@ public:
 private:
     boost::circular_buffer<ImuData> m_buffer;
     std::string m_filename;
-    std::ofstream m_file;
     ros::Subscriber m_sub;
 
 };

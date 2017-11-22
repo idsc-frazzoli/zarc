@@ -31,16 +31,19 @@ void ViconDataLogger::msgCallback(geometry_msgs::TransformStamped::ConstPtr msg)
 
 void ViconDataLogger::dumpToFile() {
 
+
+    std::ofstream file;
+
     // create and open the .csv file
-    m_file.open(m_filename);
+    file.open(m_filename);
 
     // write the file headers
-    m_file << "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" << std::endl;
+    file << "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" << std::endl;
 
     for (boost::circular_buffer<DataVicon>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-        m_file << it->time << ", " << it->pos(0) << ", " << it->pos(1) << ", " << it->pos(2) << ", " << it->rot(0) << ", " << it->rot(1) << ", " << it->rot(2)
+        file << it->time << ", " << it->pos(0) << ", " << it->pos(1) << ", " << it->pos(2) << ", " << it->rot(0) << ", " << it->rot(1) << ", " << it->rot(2)
                 << ", " << it->q.x() << ", " << it->q.y() << ", " << it->q.z() << ", " << it->q.w() << std::endl;
 
     // close the output file
-    m_file.close();
+    file.close();
 }

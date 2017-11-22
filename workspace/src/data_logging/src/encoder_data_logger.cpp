@@ -36,7 +36,7 @@
     void EncDataLogger::dumpToFile() {
 
         // create and open the .csv file
-        std::ofstream file(m_filename);
+        std::ofstream file;
 
         file.open(m_filename);
 
