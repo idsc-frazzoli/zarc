@@ -24,7 +24,10 @@
         VelData velData;
 
         velData.time = msg->time - timeOffset;
-        velData.vel = msg->velocity;
+        velData.velFL = msg->FL;
+        velData.velFR = msg->FR;
+        velData.velBL = msg->BL;
+        velData.velBR = msg->BR;
 
         m_buffer.push_back(velData);
     }
@@ -33,16 +36,18 @@
     void EncDataLogger::dumpToFile() {
 
         // create and open the .csv file
-        m_file.open(m_filename);
+        std::ofstream file(m_filename);
+
+        file.open(m_filename);
 
         // write the file headers
-        m_file << "time, vel_enc" << std::endl;
+        file << "time, velFL, velFR, velBL, velBR" << std::endl;
 
         for (boost::circular_buffer<VelData>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-            m_file << it->time << ", " << it->vel << std::endl;
+            file << it->time << ", " << it->velFL << ", " << it->velFR << ", " << it->velBL << ", " << it->velBR << std::endl;
 
         // close the output file
-        m_file.close();
+        file.close();
     }
 
 

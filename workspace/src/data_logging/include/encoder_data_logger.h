@@ -19,7 +19,10 @@
 
 struct VelData {
     double time;
-    double vel;
+    double velFL;
+    double velFR;
+    double velBL;
+    double velBR;
 };
 
 class EncDataLogger: public DataLogger {
@@ -37,7 +40,6 @@ public:
 private:
     boost::circular_buffer<VelData> m_buffer;
     std::string m_filename;
-    std::ofstream m_file;
     ros::Subscriber m_sub;
 
 };
