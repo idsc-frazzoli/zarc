@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
 
-    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput.csv",  "vicon/CAR/CAR", n, 1 );
-    ImuDataLogger imuDataLogger(buffSize, "imuExampleOutput.csv",  "imu/data", n, 1000 );
-    EncDataLogger encDataLogger(buffSize, "encExampleOutput.csv",  "forward_vel", n, 1000 );
+    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput",  "vicon/CAR/CAR", n, 1 );
+    ImuDataLogger imuDataLogger(buffSize, "imuExampleOutput",  "imu/data", n, 1000 );
+    EncDataLogger encDataLogger(buffSize, "encExampleOutput",  "forward_vel", n, 1000 );
 
     //current working directory
     boost::filesystem::path full_path( boost::filesystem::current_path() );
