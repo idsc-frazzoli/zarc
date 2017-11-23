@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
 
-    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput",  "vicon/CAR/CAR", n, 1 );
-    ImuDataLogger imuDataLogger(buffSize, "imuExampleOutput",  "imu/data", n, 1000 );
-    EncDataLogger encDataLogger(buffSize, "encExampleOutput",  "forward_vel", n, 1000 );
+    //ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput.csv",  "vicon/CAR/CAR", n, 1 );
+    ImuDataLogger imuDataLogger(buffSize, "imuOutput.csv",  "imu/data", n, 1000 );
+    EncDataLogger encDataLogger(buffSize, "encOutput.csv",  "forward_vel", n, 1000 );
 
     //current working directory
     boost::filesystem::path full_path( boost::filesystem::current_path() );
@@ -84,12 +84,12 @@ int main(int argc, char** argv) {
         ros::spinOnce();
         if (flag) {
             std::cout << " \n Data logger node terminated. Saving measurements into: " << full_path << std::endl;
-            viconDataLogger.dumpToFile();
+            //viconDataLogger.dumpToFile();
             imuDataLogger.dumpToFile();
             encDataLogger.dumpToFile();
             break;
         }
-        ros::Duration(0.01).sleep();
+        //ros::Duration(0.01).sleep();
     }
     ros::shutdown();
     return 0;
