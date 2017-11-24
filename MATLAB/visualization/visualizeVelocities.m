@@ -1,8 +1,8 @@
 %vextract velocities
 
-
-data = csvread('/home/jelavice/Vicon_exampleOutput.csv',1);
-file = fopen('/home/jelavice/Vicon_exampleOutput.csv','r');
+str = '/home/jelavice/pwm_90,93/viconExampleOutput_23-11-2017 03:06:10.csv';
+data = csvread(str,1);
+file = fopen(str,'r');
 header = fgets(file);
 fclose(file);
 labels = getLabels(header);
@@ -59,6 +59,7 @@ r_f = filtfilt(d2,r);
 
 subplot(3,1,1)
 plot(t,yaw,'Linewidth', 2);
+ylabel('heading');
 hold on
 subplot(3,1,2)
 plot(t(1:end-1),dxB_f,'Linewidth', 2);
@@ -67,22 +68,23 @@ plot(t(1:end-1),dyB_f,'Linewidth', 2);
 legend('V_x', 'V_y')
 subplot(3,1,3)
 plot(t(1:end-1), r_f);
+ylabel('yaw rate')
 hold on
 
-% figure
-% subplot(3,1,1)
-% plot(t,yaw,'Linewidth', 2);
-% hold on
-% plot(t,yaw_f,'Linewidth', 2);
-% subplot(3,1,2)
-% plot(t(1:end-1),dxB,'Linewidth', 2);
-% hold on
-% plot(t(1:end-1),dyB,'Linewidth', 2);
-% plot(t(1:end-1),dxB_f,'Linewidth', 2);
-% grid on
-% plot(t(1:end-1),dyB_f,'Linewidth', 2);
-% legend('V_x', 'V_y')
-% subplot(3,1,3)
-% plot(t(1:end-1), r);
-% hold on
-% plot(t(1:end-1), r_f);
+figure
+subplot(3,1,1)
+plot(t,yaw,'Linewidth', 2);
+hold on
+plot(t,yaw_f,'Linewidth', 2);
+subplot(3,1,2)
+plot(t(1:end-1),dxB,'Linewidth', 2);
+hold on
+plot(t(1:end-1),dyB,'Linewidth', 2);
+plot(t(1:end-1),dxB_f,'Linewidth', 2);
+grid on
+plot(t(1:end-1),dyB_f,'Linewidth', 2);
+legend('V_x', 'V_y')
+subplot(3,1,3)
+plot(t(1:end-1), r);
+hold on
+plot(t(1:end-1), r_f);
