@@ -25,8 +25,8 @@
 #include <ros/ros.h>
 #include <boost/filesystem.hpp>
 
-#include "encoder_data_logger.h"
-#include "imu_data_logger.h"
+//#include "encoder_data_logger.h"
+//#include "imu_data_logger.h"
 #include "vicon_data_logger.h"
 
 

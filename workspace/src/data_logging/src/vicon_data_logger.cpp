@@ -8,6 +8,7 @@
 #include "vicon_data_logger.h"
 #include <ctime>
 
+//TODO do this in the base class
 ViconDataLogger::ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize) :
         m_filename(filename) {
     m_buffer.set_capacity(buffSize);
@@ -20,7 +21,7 @@ void ViconDataLogger::msgCallback(geometry_msgs::TransformStamped::ConstPtr msg)
 
     if (timeOffset < 0)
         timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
-
+    //TODO move this to a different function;
     DataVicon dataVicon;
     dataVicon.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset;
     dataVicon.pos = Eigen::Matrix<double, 3, 1>(msg->transform.translation.x, msg->transform.translation.y, msg->transform.translation.z);
@@ -30,7 +31,8 @@ void ViconDataLogger::msgCallback(geometry_msgs::TransformStamped::ConstPtr msg)
     m_buffer.push_back(dataVicon);
 }
 
-void ViconDataLogger::dumpToFile() {
+//TODO move to base
+void ViconDataLogger::dumpToFile1() {
 
 
     time_t rawtime;

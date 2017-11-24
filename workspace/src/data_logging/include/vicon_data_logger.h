@@ -25,7 +25,7 @@ struct DataVicon {
     Eigen::Quaternion<double> q;
 };
 
-class ViconDataLogger: public DataLogger {
+class ViconDataLogger: public DataLogger<geometry_msgs::TransformStamped::ConstPtr> {
 
 public:
     ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize);
@@ -33,14 +33,14 @@ public:
     virtual ~ViconDataLogger() {
     }
 
-    void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg);
+    void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg) override;
 
-    void dumpToFile() override;
+    //TODO remove this
+    void dumpToFile1();
+
 
 private:
-    boost::circular_buffer<DataVicon> m_buffer;
-    std::string m_filename;
-    ros::Subscriber m_sub;
+
 
 };
 
