@@ -29,11 +29,11 @@ ${EIGEN3_INCLUDE_DIR})
 
 
 
-add_library(encoder_logger src/encoder_data_logger.cpp)
-target_link_libraries(encoder_logger
-    ${catkin_LIBRARIES}
-    ${Boost_LIBRARIES}
-)
+#add_library(encoder_logger src/encoder_data_logger.cpp)
+#target_link_libraries(encoder_logger
+#    ${catkin_LIBRARIES}
+#    ${Boost_LIBRARIES}
+#)
 
 add_library(vicon_logger src/vicon_data_logger.cpp)
 target_link_libraries(vicon_logger
@@ -41,17 +41,17 @@ target_link_libraries(vicon_logger
     ${Boost_LIBRARIES}
 )
 
-add_library(imu_logger src/imu_data_logger.cpp)
-target_link_libraries(imu_logger
-    ${catkin_LIBRARIES}
-    ${Boost_LIBRARIES}
-)
+#add_library(imu_logger src/imu_data_logger.cpp)
+#target_link_libraries(imu_logger
+#    ${catkin_LIBRARIES}
+#    ${Boost_LIBRARIES}
+#)
 
 add_executable(logger_node src/logger_node.cpp)
 target_link_libraries(logger_node
     ${catkin_LIBRARIES}
     ${Boost_LIBRARIES}
-    encoder_logger
+    #encoder_logger
     vicon_logger
-    imu_logger
+    #imu_logger
 )

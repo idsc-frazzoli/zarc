@@ -25,7 +25,12 @@ struct DataVicon {
     Eigen::Quaternion<double> q;
 };
 
-class ViconDataLogger: public DataLogger<geometry_msgs::TransformStamped::ConstPtr> {
+using msgPtr_t = geometry_msgs::TransformStamped::ConstPtr;
+
+class ViconDataLogger: public DataLogger<msgPtr_t> {
+
+typedef DataLogger<msgPtr_t> BASE;
+
 
 public:
     ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize);
@@ -33,10 +38,7 @@ public:
     virtual ~ViconDataLogger() {
     }
 
-    void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg) override;
-
-    //TODO remove this
-    void dumpToFile1();
+    void msgCallback(msgPtr_t msg) override;
 
 
 private:
