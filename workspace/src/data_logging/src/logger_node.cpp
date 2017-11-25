@@ -20,6 +20,7 @@
 #include "encoder_data_logger.h"
 #include "imu_data_logger.h"
 #include "vicon_data_logger.h"
+#include "logger_factory.h"
 
 volatile sig_atomic_t flag = 0;
 
@@ -28,24 +29,24 @@ void signalCallback(int sig) {
     flag = 1;
 }
 
-class LoggerFactory {
-
-public:
-
-    enum LoggerType {
-        VICON,
-        IMU,
-        ENCODER
-    };
-
-LoggerFactory(){}
-~LoggerFactory(){}
+struct ConfigData {
+    int               buffSize;
+    std::string       filename;
+    std::string       topic;
+    int               queueSize;
+    std::string       header;
+};
 
 void loadSettings(std::string filename){
     YAML::Node config = YAML::LoadFile(filename);
 
     if (config.IsNull())
         throw  std::runtime_error("YAML couldn't find: " + filename);//File Not Found?
+
+    YAML::const_iterator it=config.begin();
+    std::string key = it->first.as<std::string>();
+    if (key != "logger_node")
+        throw std::runtime_error("Settings for the logger node not specified");
 
     for(YAML::const_iterator it=config.begin(); it != config.end(); it++) {
        std::string key = it->first.as<std::string>();       // <- key
@@ -56,9 +57,6 @@ void loadSettings(std::string filename){
 
 
 
-
-};
-
 int main(int argc, char** argv) {
 
 
@@ -67,10 +65,10 @@ int main(int argc, char** argv) {
 
     std::string configFile(argv[1]);
 
-    std::cout << configFile << std::endl;
+    std::vector<LoggerFactory::loggerPtr_t> loggers;
 
-    LoggerFactory loggerFactory;
-    loggerFactory.loadSettings(configFile);
+
+
 
 
     int buffSize = 10000;

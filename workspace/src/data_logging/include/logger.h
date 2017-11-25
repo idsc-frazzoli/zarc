@@ -15,8 +15,18 @@
 #include <fstream>
 #include <boost/circular_buffer.hpp>
 
+
+class IDataLogger {
+public:
+    IDataLogger () {}
+    virtual ~IDataLogger() {}
+    virtual void dumpToFile() = 0;
+};
+
+
+
 template<typename MSGTYPEPTR>
-class DataLogger {
+class DataLogger: public IDataLogger {
 
 public:
 
@@ -33,7 +43,7 @@ public:
 
     virtual void msgCallback(MSGTYPEPTR msg) = 0;
 
-    void dumpToFile() {
+    void dumpToFile() override {
 
         if (m_dumpedToFile)
             return;
@@ -82,5 +92,9 @@ private:
     bool m_dumpedToFile;
 
 };
+
+
+
+
 
 #endif /* LOGGER_H_ */

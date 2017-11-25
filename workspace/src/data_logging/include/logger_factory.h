@@ -10,6 +10,7 @@
 
 
 #include "logger.h"
+#include "vicon_data_logger.h"
 #include <memory>
 
 class LoggerFactory
@@ -22,14 +23,13 @@ class LoggerFactory
         ENCODER
     };
 
-    typedef std::unique_ptr<DataLogger> loggerPtr_t;
+    typedef std::unique_ptr<IDataLogger> loggerPtr_t;
 
-     static DataLogger NewLogger(LoggerType id)
+     static DataLogger NewLogger(LoggerType id, int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header)
      {
-         if(id == "laptop")
-             return new Laptop;
-         if(id == "desktop")
-             return new Desktop;
+         if(id == VICON)
+             return std::unique_ptr<IDataLogger> (new ViconDataLogger(buffSize, filename, topic, n, queueSize, header));
+
          return NULL;
      }
  };
