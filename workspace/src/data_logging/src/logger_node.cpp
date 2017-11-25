@@ -5,9 +5,6 @@
  *      Author: jelavice
  */
 
-
-
-
 /*
  * logging_node.cpp
  *
@@ -17,7 +14,6 @@
 
 // inlcude iostream and string libraries
 #include <iostream>
-#include <Eigen/Dense>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -25,13 +21,9 @@
 #include <ros/ros.h>
 #include <boost/filesystem.hpp>
 
-//#include "encoder_data_logger.h"
-//#include "imu_data_logger.h"
+#include "encoder_data_logger.h"
+#include "imu_data_logger.h"
 #include "vicon_data_logger.h"
-
-
-
-
 
 volatile sig_atomic_t flag = 0;
 
@@ -39,7 +31,6 @@ volatile sig_atomic_t flag = 0;
 void signalCallback(int sig) {
     flag = 1;
 }
-
 
 //don't need this unless I want to do some dynamic loading
 //class LoggerFactory {
@@ -54,21 +45,19 @@ void signalCallback(int sig) {
 //
 //};
 
-
-
-
 int main(int argc, char** argv) {
 
     int buffSize = 10000;
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
+    double sleepTime = 0.01;
 
-    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput",  "vicon/CAR/CAR", n, 1, "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" );
-    //ImuDataLogger imuDataLogger(buffSize, "imuOutput",  "imu/data", n, 1000 );
-    //EncDataLogger encDataLogger(buffSize, "encOutput",  "forward_vel", n, 1000 );
+    vicon_log::ViconDataLogger viconDataLogger(buffSize, "viconOutput", "vicon/CAR/CAR", n, 1, "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw");
+    imu_log::ImuDataLogger imuDataLogger(buffSize, "imuOutput", "imu/data", n, 1000, "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw");
+    enc_log::EncDataLogger encDataLogger(buffSize, "encOutput", "forward_vel", n, 1000, "time, velFL, velFR, velBL, velBR");
 
     //current working directory
-    boost::filesystem::path full_path( boost::filesystem::current_path() );
+    boost::filesystem::path full_path(boost::filesystem::current_path());
 
     signal(SIGINT, signalCallback);
 
@@ -76,12 +65,9 @@ int main(int argc, char** argv) {
         ros::spinOnce();
         if (flag) {
             std::cout << " \n Data logger node terminated. Saving measurements into: " << full_path << std::endl;
-            viconDataLogger.dumpToFile();
-            //imuDataLogger.dumpToFile();
-            //encDataLogger.dumpToFile();
             break;
         }
-        //ros::Duration(0.01).sleep();
+        ros::Duration(sleepTime).sleep();
     }
     ros::shutdown();
     return 0;

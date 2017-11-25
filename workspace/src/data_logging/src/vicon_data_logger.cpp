@@ -8,12 +8,12 @@
 #include "vicon_data_logger.h"
 
 //TODO do this in the base class
-ViconDataLogger::ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header) :
+vicon_log::ViconDataLogger::ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header) :
         BASE(buffSize, filename, queueSize, header) {
     m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, this);
 }
 
-void ViconDataLogger::msgCallback(msgPtr_t msg) {
+void vicon_log::ViconDataLogger::msgCallback(msgPtr_t msg) {
 
     static double timeOffset = -1;
 

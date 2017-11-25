@@ -35,7 +35,7 @@ public:
 
     void dumpToFile() {
 
-        if(m_dumpedToFile)
+        if (m_dumpedToFile)
             return;
 
         std::string fileName = m_filename + "_" + getCurrTime() + ".csv";
@@ -66,7 +66,7 @@ protected:
         time(&rawtime);
         timeinfo = localtime(&rawtime);
 
-        strftime(buffer, sizeof(buffer), "%d-%m-%Y %I:%M:%S", timeinfo);
+        strftime(buffer, sizeof(buffer), "%d-%m-%Y_%I:%M:%S", timeinfo);
         return std::string(buffer);
 
     }
