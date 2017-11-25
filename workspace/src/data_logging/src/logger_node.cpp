@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <ros/ros.h>
 #include <boost/filesystem.hpp>
-#include <>yaml-cpp/yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "encoder_data_logger.h"
 #include "imu_data_logger.h"
@@ -42,8 +42,16 @@ LoggerFactory(){}
 ~LoggerFactory(){}
 
 void loadSettings(std::string filename){
-    YAML::Node baseNode = YAML::Load(filename);
-    if (baseNode.IsNull()) return false; //File Not Found?
+    YAML::Node config = YAML::LoadFile(filename);
+
+    if (config.IsNull())
+        throw  std::runtime_error("YAML couldn't find: " + filename);//File Not Found?
+
+    for(YAML::const_iterator it=config.begin(); it != config.end(); it++) {
+       std::string key = it->first.as<std::string>();       // <- key
+       std::cout << key << std::endl;
+    }
+
 }
 
 
