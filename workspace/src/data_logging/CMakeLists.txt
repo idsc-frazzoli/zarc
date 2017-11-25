@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wfatal-errors")
 
@@ -24,7 +25,8 @@ include_directories(include
 src 
 ${catkin_INCLUDE_DIRS} 
 ${Boost_INCLUDE_DIRS} 
-${EIGEN3_INCLUDE_DIR})
+${EIGEN3_INCLUDE_DIR}
+${YAML_CPP_INCLUDE_DIR})
 
 
 add_library(encoder_logger src/encoder_data_logger.cpp)
@@ -49,6 +51,7 @@ add_executable(logger_node src/logger_node.cpp)
 target_link_libraries(logger_node
     ${catkin_LIBRARIES}
     ${Boost_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
     encoder_logger
     vicon_logger
     imu_logger
