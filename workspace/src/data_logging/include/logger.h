@@ -38,7 +38,7 @@ public:
     }
 
     virtual ~DataLogger() {
-        dumpToFile();
+        //dumpToFile(); caller should dump to file or automatically?
     }
 
     virtual void msgCallback(MSGTYPEPTR msg) = 0;

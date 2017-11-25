@@ -5,8 +5,6 @@
  *      Author: jelavice
  */
 
-
-
 // inlcude iostream and string libraries
 #include <iostream>
 #include <stdio.h>
@@ -30,57 +28,68 @@ void signalCallback(int sig) {
 }
 
 struct ConfigData {
-    int               buffSize;
-    std::string       filename;
-    std::string       topic;
-    int               queueSize;
-    std::string       header;
+    int buffSize;
+    std::string outFileName;
+    std::string topic;
+    int queueSize;
+    std::string header;
+    std::string descriptor;
 };
 
-void loadSettings(std::string filename){
+void loadSettings(std::string filename, double& sleepTime, std::vector<ConfigData>& params) {
     YAML::Node config = YAML::LoadFile(filename);
 
     if (config.IsNull())
-        throw  std::runtime_error("YAML couldn't find: " + filename);//File Not Found?
+        throw std::runtime_error("YAML couldn't find: " + filename); //File Not Found?
 
-    YAML::const_iterator it=config.begin();
+    YAML::const_iterator it = config.begin();
     std::string key = it->first.as<std::string>();
     if (key != "logger_node")
         throw std::runtime_error("Settings for the logger node not specified");
 
-    for(YAML::const_iterator it=config.begin(); it != config.end(); it++) {
-       std::string key = it->first.as<std::string>();       // <- key
-       std::cout << key << std::endl;
-    }
+    sleepTime = it->second.as<double>();
 
+    it++;
+    while (it != config.end()) {
+
+        //TODO fix this, second is not god
+        ConfigData configData;
+        configData.buffSize = it->second["buffSize"].as<int>();
+        configData.outFileName = it->second["outFileName"].as<std::string>();
+        configData.topic = it->second["topicName"].as<std::string>();
+        configData.queueSize = it->second["rosSubQueueSize"].as<int>();
+        configData.header = it->second["header"].as<std::string>();
+        configData.descriptor = it->first.as<std::string>();
+        params.push_back(configData);
+        it++;
+    }
 }
 
+void createLoggers(const std::vector<ConfigData>& configData, std::vector<LoggerFactory::loggerPtr_t>& loggers, ros::NodeHandle& n){
 
+    for (int i=0; i < configData.size(); i++)
+        loggers.push_back(LoggerFactory::newLogger(configData[i].descriptor, configData[i].buffSize,
+                configData[i].outFileName, configData[i].topic, n, configData[i].queueSize, configData[i].header));
+}
 
 int main(int argc, char** argv) {
-
 
     if (argc < 2)
         throw std::runtime_error("No config file provided");
 
-    std::string configFile(argv[1]);
-
-    std::vector<LoggerFactory::loggerPtr_t> loggers;
-
-
-
-
-
-    int buffSize = 10000;
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
-    double sleepTime = 0.01;
+    double sleepTime;
+    std::string configFile(argv[1]);
+    std::vector<LoggerFactory::loggerPtr_t> loggers;
+    std::vector<ConfigData> configData;
 
-//    vicon_log::ViconDataLogger viconDataLogger(buffSize, "viconOutput", "vicon/CAR/CAR", n, 1, "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw");
-//    imu_log::ImuDataLogger imuDataLogger(buffSize, "imuOutput", "imu/data", n, 1000, "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw");
-//    enc_log::EncDataLogger encDataLogger(buffSize, "encOutput", "forward_vel", n, 1000, "time, velFL, velFR, velBL, velBR");
 
-    //current working directory
+    loadSettings(configFile, sleepTime, configData);
+    createLoggers(configData, loggers, n);
+
+
+//current working directory
     boost::filesystem::path full_path(boost::filesystem::current_path());
 
     signal(SIGINT, signalCallback);
