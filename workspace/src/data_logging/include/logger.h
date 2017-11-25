@@ -9,6 +9,7 @@
 #define LOGGER_H_
 
 #include <iostream>
+#include <vector>
 #include <string>
 #include <ctime>
 #include <fstream>
@@ -67,7 +68,9 @@ public:
     }
 
 
-    void addToBuff(std::vector){};
+    void addToBuff(const std::vector<double>& vec){
+
+    }
 
 
 

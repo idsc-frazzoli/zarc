@@ -10,8 +10,8 @@
 
 //TODO do this in the base class
 ViconDataLogger::ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header):
-BASE(buffSize,filename, queueSize, header)
-         {
+ViconDataLogger::BASE(buffSize,filename, queueSize, header)
+{
 
     m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, this);
 }

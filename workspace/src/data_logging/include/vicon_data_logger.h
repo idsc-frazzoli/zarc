@@ -33,7 +33,7 @@ typedef DataLogger<msgPtr_t> BASE;
 
 
 public:
-    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize);
+    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header);
 
     virtual ~ViconDataLogger() {
     }
@@ -42,7 +42,7 @@ public:
 
 
 private:
-
+    ros::Subscriber m_sub;
 
 };
 

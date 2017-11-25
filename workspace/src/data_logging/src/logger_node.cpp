@@ -57,21 +57,13 @@ void signalCallback(int sig) {
 
 
 
-//#include <libgen.h>
-//
-//ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-//const char *path;
-//if (count != -1) {
-//    path = dirname(result);
-//}
-
 int main(int argc, char** argv) {
 
     int buffSize = 10000;
     ros::init(argc, argv, "data_logger");
     ros::NodeHandle n;
 
-    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput",  "vicon/CAR/CAR", n, 1 );
+    ViconDataLogger viconDataLogger(buffSize, "viconExampleOutput",  "vicon/CAR/CAR", n, 1, "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" );
     //ImuDataLogger imuDataLogger(buffSize, "imuOutput",  "imu/data", n, 1000 );
     //EncDataLogger encDataLogger(buffSize, "encOutput",  "forward_vel", n, 1000 );
 
