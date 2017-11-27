@@ -25,8 +25,8 @@ public:
     EncDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader,
             std::string loggerType);
 
-    virtual ~EncDataLogger() {
-    }
+//    virtual ~EncDataLogger() {
+//    }
 
     void msgCallback(msgPtr_t msg);
 
@@ -34,6 +34,7 @@ private:
 
     ros::Subscriber m_sub;
     typedef DataLogger<msgPtr_t> BASE;
+    double m_timeOffset;
 
 };
 

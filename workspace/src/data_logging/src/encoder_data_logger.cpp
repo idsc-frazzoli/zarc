@@ -9,20 +9,19 @@
 
 enc_log::EncDataLogger::EncDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
         std::string csvHeader, std::string loggerType) :
-        BASE(buffSize, outFilename, csvHeader, loggerType) {
-    m_sub = n.subscribe(rosTopicName, rosQueueSize, &EncDataLogger::msgCallback, this);
+        BASE(buffSize, outFilename, csvHeader, loggerType), m_timeOffset(-1.0) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &EncDataLogger::msgCallback, this); //TODO m_sub in the base class
+    //TODO allow to start and stop the logging from the outside world
 }
 
 void enc_log::EncDataLogger::msgCallback(msgPtr_t msg) {
 
-    static double timeOffset = -1;
-
-    if (timeOffset < 0)
-        timeOffset = msg->time;
+    if (m_timeOffset < 0)
+        m_timeOffset = msg->time;
 
     std::vector<double> data;
 
-    data.push_back(msg->time - timeOffset);
+    data.push_back(msg->time - m_timeOffset);
     data.push_back(msg->FL);
     data.push_back(msg->FR);
     data.push_back(msg->BL);

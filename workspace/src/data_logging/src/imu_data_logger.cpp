@@ -9,21 +9,19 @@
 
 imu_log::ImuDataLogger::ImuDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
         std::string csvHeader, std::string loggerType) :
-        BASE(buffSize, outFilename, csvHeader, loggerType) {
+        BASE(buffSize, outFilename, csvHeader, loggerType), m_timeOffset(-1.0) {
     m_sub = n.subscribe(rosTopicName, rosQueueSize, &ImuDataLogger::msgCallback, this);
 }
 
 void imu_log::ImuDataLogger::msgCallback(msgPtr_t msg) {
 
-    static double timeOffset = -1;
-
-    if (timeOffset < 0)
-        timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+    if (m_timeOffset < 0)
+        m_timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
 
     std::vector<double> data;
 
     //time
-    data.push_back(msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset);
+    data.push_back(msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - m_timeOffset);
 
     //ang vel
     data.push_back(msg->angular_velocity.x);

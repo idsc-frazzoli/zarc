@@ -34,6 +34,7 @@ private:
 
     ros::Subscriber m_sub;
     typedef DataLogger<msgPtr_t> BASE;
+    double m_timeOffset;
 
 };
 

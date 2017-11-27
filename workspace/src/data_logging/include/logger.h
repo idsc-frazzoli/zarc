@@ -38,15 +38,13 @@ public:
     }
 
     virtual ~DataLogger() {
-        dumpToFile(); //caller should dump to file or automatically?
+        if (m_dumpedToFile == false)
+            dumpToFile(); //caller should dump to file or automatically?
     }
 
     virtual void msgCallback(MSGTYPEPTR msg) = 0;
 
-    void dumpToFile() override {
-
-        if (m_dumpedToFile)
-            return;
+    void dumpToFile() final {
 
         std::string fileName = m_outFilename + "_" + getCurrTime() + ".csv";
         std::ofstream file;

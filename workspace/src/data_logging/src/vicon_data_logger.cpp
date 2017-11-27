@@ -9,23 +9,19 @@
 
 vicon_log::ViconDataLogger::ViconDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
         std::string csvHeader, std::string loggerType) :
-        BASE(buffSize, outFilename, csvHeader, loggerType) {
+        BASE(buffSize, outFilename, csvHeader, loggerType), m_timeOffset(-1.0) {
     m_sub = n.subscribe(rosTopicName, rosQueueSize, &ViconDataLogger::msgCallback, this);
 }
 
 void vicon_log::ViconDataLogger::msgCallback(msgPtr_t msg) {
 
-    static double timeOffset = -1;
+    if (m_timeOffset < 0)
+        m_timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
 
-    if (timeOffset < 0)
-        timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
-
-    //magic number, number of elements that we want to insert
-    int numElem = 11;
-    std::vector<double> data(numElem);
+    std::vector<double> data;
 
     //the order has to match to the one in the header
-    data.push_back(msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset);
+    data.push_back(msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - m_timeOffset);
     data.push_back(msg->transform.translation.x);
     data.push_back(msg->transform.translation.y);
     data.push_back(msg->transform.translation.z);
