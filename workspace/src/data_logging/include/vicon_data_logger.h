@@ -24,9 +24,6 @@ class ViconDataLogger: public DataLogger<msgPtr_t> {
 public:
     ViconDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader, std::string loggerType);
 
-    virtual ~ViconDataLogger() {
-    }
-
     void msgCallback(msgPtr_t msg) override;
 
 private:

@@ -25,9 +25,6 @@ public:
     ImuDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader,
             std::string loggerType);
 
-    virtual ~ImuDataLogger() {
-    }
-
     void msgCallback(msgPtr_t msg) override;
 
 private:
