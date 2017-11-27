@@ -5,20 +5,17 @@
  *      Author: jelavice
  */
 
-// inlcude iostream and string libraries
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
 #include <ros/ros.h>
-#include <boost/filesystem.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include "encoder_data_logger.h"
-#include "imu_data_logger.h"
 #include "vicon_data_logger.h"
+#include "imu_data_logger.h"
 #include "logger_factory.h"
+
+//#define DEBUG
 
 volatile sig_atomic_t flag = 0;
 
@@ -30,9 +27,9 @@ void signalCallback(int sig) {
 struct ConfigData {
     int buffSize;
     std::string outFileName;
-    std::string topic;
-    int queueSize;
-    std::string header;
+    std::string rosTopicName;
+    int rosQueueSize;
+    std::string csvHeader;
     std::string descriptor;
 };
 
@@ -47,14 +44,7 @@ void loadSettings(std::string filename, double& sleepTime, std::vector<ConfigDat
     if (key != "logger_node")
         throw std::runtime_error("Settings for the logger node not specified");
 
-//    std::cout << "Size of the node: " << config.size() << std::endl;
-//    std::cout << it->first.as<std::string>() << std::endl;
-//
-//
-//    std::cout << it->second["rosSleepTime"].as<double>() << std::endl;
-
     it++;
-
 
     while (it != config.end()) {
 
@@ -62,20 +52,21 @@ void loadSettings(std::string filename, double& sleepTime, std::vector<ConfigDat
 
         configData.buffSize = it->second["buffSize"].as<int>();
         configData.outFileName = it->second["outFileName"].as<std::string>();
-        configData.topic = it->second["topicName"].as<std::string>();
-        configData.queueSize = it->second["rosSubQueueSize"].as<int>();
-        configData.header = it->second["header"].as<std::string>();
+        configData.rosTopicName = it->second["rosTopicName"].as<std::string>();
+        configData.rosQueueSize = it->second["rosQueueSize"].as<int>();
+        configData.csvHeader = it->second["csvHeader"].as<std::string>();
         configData.descriptor = it->first.as<std::string>();
         params.push_back(configData);
         it++;
     }
 }
 
-void createLoggers(const std::vector<ConfigData>& configData, std::vector<LoggerFactory::loggerPtr_t>& loggers, ros::NodeHandle& n){
+void createLoggers(const std::vector<ConfigData>& configData, std::vector<LoggerFactory::loggerPtr_t>& loggers, ros::NodeHandle& n) {
 
-    for (int i=0; i < configData.size(); i++)
-        loggers.push_back(LoggerFactory::newLogger(configData[i].descriptor, configData[i].buffSize,
-                configData[i].outFileName, configData[i].topic, n, configData[i].queueSize, configData[i].header));
+    for (int i = 0; i < configData.size(); i++)
+        loggers.push_back(
+                LoggerFactory::newLogger(configData[i].descriptor, configData[i].buffSize, configData[i].outFileName, configData[i].rosTopicName, n,
+                        configData[i].rosQueueSize, configData[i].csvHeader));
 }
 
 int main(int argc, char** argv) {
@@ -90,20 +81,26 @@ int main(int argc, char** argv) {
     std::vector<LoggerFactory::loggerPtr_t> loggers;
     std::vector<ConfigData> configData;
 
-
     loadSettings(configFile, sleepTime, configData);
     createLoggers(configData, loggers, n);
 
-
-//current working directory
-    boost::filesystem::path full_path(boost::filesystem::current_path());
+#ifdef DEBUG
+    std::cout << configData.size() << std::endl;
+    for (int i = 0; i < configData.size(); i++) {
+        std::cout << configData[i].buffSize << std::endl;
+        std::cout << configData[i].outFileName << std::endl;
+        std::cout << configData[i].topic << std::endl;
+        std::cout << configData[i].queueSize << std::endl;
+        std::cout << configData[i].header << std::endl;
+        std::cout << configData[i].descriptor << std::endl << std::endl << std::endl;
+    }
+#endif
 
     signal(SIGINT, signalCallback);
 
     while (true) {
         ros::spinOnce();
         if (flag) {
-            std::cout << " \n Data logger node terminated. Saving measurements into: " << full_path << std::endl;
             break;
         }
         ros::Duration(sleepTime).sleep();

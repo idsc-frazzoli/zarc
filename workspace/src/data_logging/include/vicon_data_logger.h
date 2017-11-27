@@ -22,7 +22,7 @@ using msgPtr_t = geometry_msgs::TransformStamped::ConstPtr;
 class ViconDataLogger: public DataLogger<msgPtr_t> {
 
 public:
-    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header);
+    ViconDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader, std::string loggerType);
 
     virtual ~ViconDataLogger() {
     }

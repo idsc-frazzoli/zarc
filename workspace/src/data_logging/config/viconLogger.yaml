@@ -1,0 +1,9 @@
+logger_node:
+ rosSleepTime: 0.01
+
+vicon_logger:
+ buffSize: 10000
+ outFileName: "viconOutput"
+ rosTopicName: "vicon/CAR/CAR"
+ rosQueueSize: 1
+ csvHeader: "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" 

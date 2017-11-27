@@ -7,10 +7,10 @@
 
 #include "vicon_data_logger.h"
 
-//TODO do this in the base class
-vicon_log::ViconDataLogger::ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header) :
-        BASE(buffSize, filename, queueSize, header) {
-    m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, this);
+vicon_log::ViconDataLogger::ViconDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
+        std::string csvHeader, std::string loggerType) :
+        BASE(buffSize, outFilename, csvHeader, loggerType) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &ViconDataLogger::msgCallback, this);
 }
 
 void vicon_log::ViconDataLogger::msgCallback(msgPtr_t msg) {

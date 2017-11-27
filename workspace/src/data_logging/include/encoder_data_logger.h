@@ -22,7 +22,8 @@ class EncDataLogger: public DataLogger<msgPtr_t> {
 
 public:
 
-    EncDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header);
+    EncDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader,
+            std::string loggerType);
 
     virtual ~EncDataLogger() {
     }
@@ -38,4 +39,4 @@ private:
 
 } /*enc_log*/
 
-#endif /* SRC_DATA_LOGGING_INCLUDE_ENCODER_DATA_LOGGER_H_ */
+#endif /* ENCODER_DATA_LOGGER_H_ */

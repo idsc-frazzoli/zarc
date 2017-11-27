@@ -7,10 +7,10 @@
 
 #include "encoder_data_logger.h"
 
-enc_log::EncDataLogger::EncDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header) :
-        BASE(buffSize, filename, queueSize, header) {
-    m_sub = n.subscribe(topic, queueSize, &EncDataLogger::msgCallback, this);
-
+enc_log::EncDataLogger::EncDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
+        std::string csvHeader, std::string loggerType) :
+        BASE(buffSize, outFilename, csvHeader, loggerType) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &EncDataLogger::msgCallback, this);
 }
 
 void enc_log::EncDataLogger::msgCallback(msgPtr_t msg) {

@@ -14,16 +14,16 @@
 #include <ctime>
 #include <fstream>
 #include <boost/circular_buffer.hpp>
-
+#include <boost/filesystem.hpp>
 
 class IDataLogger {
 public:
-    IDataLogger () {}
-    virtual ~IDataLogger() {}
+    IDataLogger() {
+    }
+    virtual ~IDataLogger() {
+    }
     virtual void dumpToFile() = 0;
 };
-
-
 
 template<typename MSGTYPEPTR>
 class DataLogger: public IDataLogger {
@@ -32,13 +32,13 @@ public:
 
     typedef boost::circular_buffer<std::vector<double> > buffer_t;
 
-    DataLogger(int buffSize, std::string filename, int queueSize, std::string header) :
-            m_filename(filename), m_header(header), m_dumpedToFile(false) {
+    DataLogger(int buffSize, std::string outFilename, std::string csvHeader, std::string loggerType) :
+            m_outFilename(outFilename), m_csvHeader(csvHeader), m_dumpedToFile(false), m_loggerType(loggerType) {
         m_buffer.set_capacity(buffSize);
     }
 
     virtual ~DataLogger() {
-        //dumpToFile(); caller should dump to file or automatically?
+        dumpToFile(); //caller should dump to file or automatically?
     }
 
     virtual void msgCallback(MSGTYPEPTR msg) = 0;
@@ -48,12 +48,12 @@ public:
         if (m_dumpedToFile)
             return;
 
-        std::string fileName = m_filename + "_" + getCurrTime() + ".csv";
+        std::string fileName = m_outFilename + "_" + getCurrTime() + ".csv";
         std::ofstream file;
         file.open(fileName);
 
         // write the file headers
-        file << m_header << std::endl;
+        file << m_csvHeader << std::endl;
 
         for (buffer_t::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++) {
             for (int i = 0; i < it->size(); i++)
@@ -65,6 +65,10 @@ public:
         file.close();
 
         m_dumpedToFile = true;
+
+        //current working directory
+        boost::filesystem::path full_path(boost::filesystem::current_path());
+        std::cout << " \n" << m_loggerType << " terminated. Saving measurements into: " << full_path << std::endl;
     }
 protected:
 
@@ -87,14 +91,11 @@ protected:
 
 private:
     buffer_t m_buffer;
-    std::string m_filename;
-    std::string m_header;
+    std::string m_outFilename;
+    std::string m_csvHeader;
     bool m_dumpedToFile;
+    std::string m_loggerType;
 
 };
-
-
-
-
 
 #endif /* LOGGER_H_ */

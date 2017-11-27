@@ -22,7 +22,8 @@ class ImuDataLogger: public DataLogger<msgPtr_t> {
 
 public:
 
-    ImuDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header);
+    ImuDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader,
+            std::string loggerType);
 
     virtual ~ImuDataLogger() {
     }

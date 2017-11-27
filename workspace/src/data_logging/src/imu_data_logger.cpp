@@ -7,13 +7,10 @@
 
 #include "imu_data_logger.h"
 
-
-
-imu_log::ImuDataLogger::ImuDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize, std::string header) :
-BASE(buffSize, filename, queueSize, header) {
-
-    m_sub = n.subscribe(topic, queueSize, &ImuDataLogger::msgCallback, this);
-
+imu_log::ImuDataLogger::ImuDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
+        std::string csvHeader, std::string loggerType) :
+        BASE(buffSize, outFilename, csvHeader, loggerType) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &ImuDataLogger::msgCallback, this);
 }
 
 void imu_log::ImuDataLogger::msgCallback(msgPtr_t msg) {
@@ -46,5 +43,4 @@ void imu_log::ImuDataLogger::msgCallback(msgPtr_t msg) {
 
     addToBuff(data);
 }
-
 
