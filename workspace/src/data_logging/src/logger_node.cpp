@@ -47,13 +47,19 @@ void loadSettings(std::string filename, double& sleepTime, std::vector<ConfigDat
     if (key != "logger_node")
         throw std::runtime_error("Settings for the logger node not specified");
 
-    sleepTime = it->second.as<double>();
+//    std::cout << "Size of the node: " << config.size() << std::endl;
+//    std::cout << it->first.as<std::string>() << std::endl;
+//
+//
+//    std::cout << it->second["rosSleepTime"].as<double>() << std::endl;
 
     it++;
+
+
     while (it != config.end()) {
 
-        //TODO fix this, second is not god
         ConfigData configData;
+
         configData.buffSize = it->second["buffSize"].as<int>();
         configData.outFileName = it->second["outFileName"].as<std::string>();
         configData.topic = it->second["topicName"].as<std::string>();
