@@ -108,11 +108,11 @@ def forward_vel():
 
         # publish messages
         msg = Velocity()
-        msg.FL = v_FL
-        msg.FR = v_FR
-        msg.BL = v_BL
-        msg.BR = v_BR
-        msg.time = time.time()
+        msg.v_FL = v_FL
+        msg.v_FR = v_FR
+        msg.v_BL = v_BL
+        msg.v_BR = v_BR
+        msg.v_time = time.time()
 
         #rospy.loginfo(velocity)
 
