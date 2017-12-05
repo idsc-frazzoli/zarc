@@ -8,44 +8,33 @@
 #ifndef IMU_DATA_LOGGER_H_
 #define IMU_DATA_LOGGER_H_
 
-
 #include <iostream>
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <boost/circular_buffer.hpp>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
-#include <Eigen/Dense>
 #include "logger.h"
 
+namespace imu_log {
 
-struct ImuData {
+using msgPtr_t = sensor_msgs::Imu::ConstPtr;
 
-    double time;
-    Eigen::Matrix<double, 3, 1> linAcc;
-    Eigen::Matrix<double, 3, 1> angVel;
-    Eigen::Quaternion<double> q;
-
-};
-
-class ImuDataLogger : public DataLogger {
+class ImuDataLogger: public DataLogger<msgPtr_t> {
 
 public:
-    ImuDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize );
 
-    virtual ~ImuDataLogger() {}
+    ImuDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader,
+            std::string loggerType);
 
-    void msgCallback(sensor_msgs::Imu::ConstPtr msg);
-
-    void dumpToFile() override ;
+    void msgCallback(msgPtr_t msg) override;
 
 private:
-    boost::circular_buffer<ImuData> m_buffer;
-    std::string m_filename;
+
     ros::Subscriber m_sub;
+    typedef DataLogger<msgPtr_t> BASE;
+    double m_timeOffset;
 
 };
 
+} /*imu_log*/
 
 #endif /* IMU_DATA_LOGGER_H_ */

@@ -6,57 +6,37 @@
  */
 
 #include "vicon_data_logger.h"
-#include <ctime>
 
-ViconDataLogger::ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize) :
-        m_filename(filename) {
-    m_buffer.set_capacity(buffSize);
-    m_sub = n.subscribe(topic, queueSize, &ViconDataLogger::msgCallback, this);
+vicon_log::ViconDataLogger::ViconDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
+        std::string csvHeader, std::string loggerType) :
+        BASE(buffSize, outFilename, csvHeader, loggerType), m_timeOffset(-1.0) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &ViconDataLogger::msgCallback, this);
 }
 
-void ViconDataLogger::msgCallback(geometry_msgs::TransformStamped::ConstPtr msg) {
+void vicon_log::ViconDataLogger::msgCallback(msgPtr_t msg) {
 
-    static double timeOffset = -1;
+    if (m_timeOffset < 0)
+        m_timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
 
-    if (timeOffset < 0)
-        timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+    std::vector<double> data;
 
-    DataVicon dataVicon;
-    dataVicon.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset;
-    dataVicon.pos = Eigen::Matrix<double, 3, 1>(msg->transform.translation.x, msg->transform.translation.y, msg->transform.translation.z);
-    dataVicon.q = Eigen::Quaternion<double>(msg->transform.rotation.w, msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z);
-    dataVicon.rot = dataVicon.q.toRotationMatrix().eulerAngles(0, 1, 2);
+    //the order has to match to the one in the header
+    data.push_back(msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - m_timeOffset);
+    data.push_back(msg->transform.translation.x);
+    data.push_back(msg->transform.translation.y);
+    data.push_back(msg->transform.translation.z);
+    data.push_back(msg->transform.rotation.w);
+    data.push_back(msg->transform.rotation.x);
+    data.push_back(msg->transform.rotation.y);
+    data.push_back(msg->transform.rotation.z);
 
-    m_buffer.push_back(dataVicon);
+    Eigen::Quaternion<double> q(msg->transform.rotation.w, msg->transform.rotation.x, msg->transform.rotation.y, msg->transform.rotation.z);
+    Eigen::Matrix<double, 3, 1> rot = q.toRotationMatrix().eulerAngles(0, 1, 2);
+    data.push_back(rot(0));
+    data.push_back(rot(1));
+    data.push_back(rot(2));
+
+    addToBuff(data);
+
 }
 
-void ViconDataLogger::dumpToFile() {
-
-
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer[80];
-
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer,sizeof(buffer),"%d-%m-%Y %I:%M:%S",timeinfo);
-    std::string time(buffer);
-
-    m_filename = m_filename + "_" + time + ".csv";
-
-    std::ofstream file;
-
-    // create and open the .csv file
-    file.open(m_filename);
-
-    // write the file headers
-    file << "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" << std::endl;
-
-    for (boost::circular_buffer<DataVicon>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-        file << it->time << ", " << it->pos(0) << ", " << it->pos(1) << ", " << it->pos(2) << ", " << it->rot(0) << ", " << it->rot(1) << ", " << it->rot(2)
-                << ", " << it->q.x() << ", " << it->q.y() << ", " << it->q.z() << ", " << it->q.w() << std::endl;
-
-    // close the output file
-    file.close();
-}

@@ -1,0 +1,25 @@
+#example config file for all sensor that we have
+
+logger_node:
+ rosSleepTime: 0.01
+
+vicon_logger:
+ buffSize: 10000
+ outFileName: "viconOutput"
+ rosTopicName: "vicon/CAR/CAR"
+ rosQueueSize: 1
+ csvHeader: "t, x, y, z, angX, angY, angZ, qx, qy, qz, qw" 
+
+imu_logger:
+ buffSize: 10000
+ outFileName: "imuOutput"
+ rosTopicName: "imu/data"
+ rosQueueSize: 1
+ csvHeader: "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw"
+
+enc_logger:
+ buffSize: 10000
+ outFileName: "encOutput"
+ rosTopicName: "forward_vel"
+ rosQueueSize: 1
+ csvHeader: "time, velFL, velFR, velBL, velBR" 

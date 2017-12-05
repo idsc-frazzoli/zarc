@@ -1,0 +1,16 @@
+logger_node:
+ rosSleepTime: 0.0
+
+imu_logger:
+ buffSize: 10000
+ outFileName: imuOutput
+ rosTopicName: "imu/data"
+ rosQueueSize: 1
+ csvHeader: "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw"
+
+enc_logger:
+ buffSize: 10000
+ outFileName: "encOutput"
+ rosTopicName: "forward_vel"
+ rosQueueSize: 1
+ csvHeader: "time, velFL, velFR, velBL, velBR" 

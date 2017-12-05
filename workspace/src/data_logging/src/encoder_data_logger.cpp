@@ -6,63 +6,27 @@
  */
 
 #include "encoder_data_logger.h"
-#include <ctime>
 
-    EncDataLogger::EncDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize ) :
-    m_filename(filename) {
-        m_buffer.set_capacity(buffSize);
-        m_sub = n.subscribe(topic, queueSize, &EncDataLogger::msgCallback, this);
+enc_log::EncDataLogger::EncDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
+        std::string csvHeader, std::string loggerType) :
+        BASE(buffSize, outFilename, csvHeader, loggerType), m_timeOffset(-1.0) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &EncDataLogger::msgCallback, this); //TODO m_sub in the base class
+    //TODO allow to start and stop the logging from the outside world
+}
 
-    }
+void enc_log::EncDataLogger::msgCallback(msgPtr_t msg) {
 
-    void EncDataLogger::msgCallback(barc::Velocity::ConstPtr msg) {
+    if (m_timeOffset < 0)
+        m_timeOffset = msg->time;
 
-        static double timeOffset = -1;
+    std::vector<double> data;
 
-        if (timeOffset < 0)
-            timeOffset = msg->time;
+    data.push_back(msg->time - m_timeOffset);
+    data.push_back(msg->FL);
+    data.push_back(msg->FR);
+    data.push_back(msg->BL);
+    data.push_back(msg->BR);
 
-        VelData velData;
-
-        velData.time = msg->time - timeOffset;
-        velData.velFL = msg->FL;
-        velData.velFR = msg->FR;
-        velData.velBL = msg->BL;
-        velData.velBR = msg->BR;
-
-        m_buffer.push_back(velData);
-    }
-
-
-    void EncDataLogger::dumpToFile() {
-
-
-        time_t rawtime;
-        struct tm * timeinfo;
-        char buffer[80];
-
-        time (&rawtime);
-        timeinfo = localtime(&rawtime);
-
-        strftime(buffer,sizeof(buffer),"%d-%m-%Y %I:%M:%S",timeinfo);
-        std::string time(buffer);
-
-        m_filename = m_filename + "_" + time + ".csv";
-
-
-        // create and open the .csv file
-        std::ofstream file;
-
-        file.open(m_filename);
-
-        // write the file headers
-        file << "time, velFL, velFR, velBL, velBR" << std::endl;
-
-        for (boost::circular_buffer<VelData>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-            file << it->time << ", " << it->velFL << ", " << it->velFR << ", " << it->velBL << ", " << it->velBR << std::endl;
-
-        // close the output file
-        file.close();
-    }
-
+    addToBuff(data);
+}
 

@@ -6,64 +6,39 @@
  */
 
 #include "imu_data_logger.h"
-#include <ctime>
 
-ImuDataLogger::ImuDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize) :
-        m_filename(filename) {
-    m_buffer.set_capacity(buffSize);
-    m_sub = n.subscribe(topic, queueSize, &ImuDataLogger::msgCallback, this);
-
+imu_log::ImuDataLogger::ImuDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize,
+        std::string csvHeader, std::string loggerType) :
+        BASE(buffSize, outFilename, csvHeader, loggerType), m_timeOffset(-1.0) {
+    m_sub = n.subscribe(rosTopicName, rosQueueSize, &ImuDataLogger::msgCallback, this);
 }
 
-void ImuDataLogger::msgCallback(sensor_msgs::Imu::ConstPtr msg) {
+void imu_log::ImuDataLogger::msgCallback(msgPtr_t msg) {
 
-    static double timeOffset = -1;
+    if (m_timeOffset < 0)
+        m_timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
 
-    if (timeOffset < 0)
-        timeOffset = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9;
+    std::vector<double> data;
 
-    ImuData imuData;
-    imuData.time = msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - timeOffset;
-    imuData.angVel(0) = msg->angular_velocity.x;
-    imuData.angVel(1) = msg->angular_velocity.y;
-    imuData.angVel(2) = msg->angular_velocity.z;
+    //time
+    data.push_back(msg->header.stamp.sec + msg->header.stamp.nsec * 1e-9 - m_timeOffset);
 
-    imuData.linAcc(0) = msg->linear_acceleration.x;
-    imuData.linAcc(1) = msg->linear_acceleration.y;
-    imuData.linAcc(2) = msg->linear_acceleration.z;
+    //ang vel
+    data.push_back(msg->angular_velocity.x);
+    data.push_back(msg->angular_velocity.y);
+    data.push_back(msg->angular_velocity.z);
 
-    imuData.q = Eigen::Quaternion<double>(msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z);
+    // lin acc
+    data.push_back(msg->linear_acceleration.x);
+    data.push_back(msg->linear_acceleration.y);
+    data.push_back(msg->linear_acceleration.z);
 
-    m_buffer.push_back(imuData);
+    // quaternion
+    data.push_back(msg->orientation.x);
+    data.push_back(msg->orientation.y);
+    data.push_back(msg->orientation.z);
+    data.push_back(msg->orientation.w);
+
+    addToBuff(data);
 }
 
-void ImuDataLogger::dumpToFile() {
-
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer[80];
-
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer,sizeof(buffer),"%d-%m-%Y %I:%M:%S",timeinfo);
-    std::string time(buffer);
-
-    m_filename = m_filename + "_" + time + ".csv";
-
-
-    std::ofstream file;
-
-    // create and open the .csv file
-    file.open(m_filename);
-
-    // write the file headers
-    file << "t, a_x, a_y, a_z, w_x, w_y, w_z, qx, qy, qz, qw " << std::endl;
-
-    for (boost::circular_buffer<ImuData>::const_iterator it = m_buffer.begin(); it != m_buffer.end(); it++)
-        file << it->time << ", " << it->linAcc(0) << ", " << it->linAcc(1) << ", " << it->linAcc(2) << ", " << it->angVel(0) << ", " << it->angVel(1) << ", "
-                << it->angVel(2) << ", " << it->q.x() << ", " << it->q.y() << ", " << it->q.z() << ", " << it->q.w() << std::endl;
-
-    // close the output file
-    file.close();
-}

@@ -9,39 +9,30 @@
 #define VICON_DATA_LOGGER_H_
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <boost/circular_buffer.hpp>
 #include <Eigen/Dense>
 #include <ros/ros.h>
 #include <geometry_msgs/TransformStamped.h>
 #include "logger.h"
 
-struct DataVicon {
+namespace vicon_log {
 
-    double time;
-    Eigen::Matrix<double, 3, 1> pos;
-    Eigen::Matrix<double, 3, 1> rot;
-    Eigen::Quaternion<double> q;
-};
+using msgPtr_t = geometry_msgs::TransformStamped::ConstPtr;
 
-class ViconDataLogger: public DataLogger {
+class ViconDataLogger: public DataLogger<msgPtr_t> {
 
 public:
-    ViconDataLogger(int buffSize, std::string filename, std::string topic, ros::NodeHandle& n, int queueSize);
+    ViconDataLogger(int buffSize, std::string outFilename, std::string rosTopicName, ros::NodeHandle& n, int rosQueueSize, std::string csvHeader, std::string loggerType);
 
-    virtual ~ViconDataLogger() {
-    }
-
-    void msgCallback(geometry_msgs::TransformStamped::ConstPtr msg);
-
-    void dumpToFile() override;
+    void msgCallback(msgPtr_t msg) override;
 
 private:
-    boost::circular_buffer<DataVicon> m_buffer;
-    std::string m_filename;
     ros::Subscriber m_sub;
+    typedef DataLogger<msgPtr_t> BASE;
+    double m_timeOffset;
 
 };
+
+} /*vicon*/
 
 #endif /* VICON_DATA_LOGGER_H_ */
