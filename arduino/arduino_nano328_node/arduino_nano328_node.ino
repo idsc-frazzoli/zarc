@@ -24,6 +24,7 @@ WARNING:
 #include <barc/Ultrasound.h>
 #include <barc/Encoder.h>
 #include <barc/ECU.h>
+#include <barc/Velocity.h>
 #include <Servo.h>
 //#include "Maxbotix.h"
 #include <EnableInterrupt.h>
@@ -55,6 +56,12 @@ class Car {
     void incBL();
     void calcThrottle();
     void calcSteering();
+    barc::Velocity calcVelocity(barc::Encoder encoder, volatile unsigned long dt);
+    // Velocity method
+    /*float calcVelocityFL();
+    float calcVelocityFR();
+    float calcVelocityBL();
+    float calcVelocityBR();*/
   private:
     // Pin assignments
     const int ENC_FL_PIN = 2;
@@ -65,6 +72,15 @@ class Car {
     const int STEERING_PIN = 8;
     const int MOTOR_PIN = 10;
     const int SERVO_PIN= 11;
+
+    const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+    const double pi = 3.1415926535897;
+    const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
+    int n_FL_prev;
+    int n_FR_prev;
+    int n_BL_prev;
+    int n_BR_prev;
+
 
     // Car properties
     // unclear what this is for
@@ -122,6 +138,9 @@ class Car {
     int BL_count = 0;
     int BR_count = 0;
 
+    // Velocity objects
+    //const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+
     // Utility functions
     uint8_t microseconds2PWM(uint16_t microseconds);
     float saturateMotor(float x);
@@ -167,12 +186,15 @@ barc::ECU ecu;
 barc::ECU rc_inputs;
 barc::Encoder encoder;
 barc::Ultrasound ultrasound;
+barc::Velocity velocity;
 
 ros::NodeHandle nh;
 
 ros::Publisher pub_encoder("encoder", &encoder);
 ros::Publisher pub_rc_inputs("rc_inputs", &rc_inputs);
 ros::Publisher pub_ultrasound("ultrasound", &ultrasound);
+//add velocity with topic name "velocity"
+ros::Publisher pub_velocity("velocity",&velocity);
 //ros::Subscriber<barc::ECU> sub_ecu("ecu_pwm", ecuCallback);
 //ros::Subscriber<barc::ECU> sub_ecu("custom_output", ecuCallback);
 ros::Subscriber<barc::ECU> sub_ecu("example", ecuCallback);
@@ -195,6 +217,11 @@ void setup()
   car.initRCInput();
   car.initActuators();
 
+  n_FL_prev = 0;
+  n_FR_prev = 0;
+  n_BL_prev = 0;
+  n_BR_prev = 0;
+
   // Start ROS node
   nh.initNode();
 
@@ -202,6 +229,8 @@ void setup()
   nh.advertise(pub_encoder);
   nh.advertise(pub_rc_inputs);
   nh.advertise(pub_ultrasound);
+  // Publish velocity
+  nh.advertise(pub_velocity);
   nh.subscribe(sub_ecu);
 
   // Arming ESC, 1 sec delay for arming and ROS
@@ -227,7 +256,11 @@ void loop() {
     encoder.FR = car.getEncoderFR();
     encoder.BL = car.getEncoderBL();
     encoder.BR = car.getEncoderBR();
+
     pub_encoder.publish(&encoder);
+
+    // calculate velocity
+    velocity = calcVelocity();
 
     rc_inputs.motor = car.getRCThrottle();
     rc_inputs.servo = car.getRCSteering();
@@ -241,6 +274,7 @@ void loop() {
     ultrasound.left = us_lt.getRange();
     pub_ultrasound.publish(&ultrasound);
     */
+
     t0 = millis();
   }
 
@@ -273,6 +307,35 @@ float Car::saturateServo(float x) {
     x = THETA_MIN;
   }
   return x;
+}
+
+/**************************************************************************
+Velocity function
+**************************************************************************/
+
+barc::Velocity calcVelocity(){
+
+    barc::Velocity vel;
+
+    int n_FL = encoder.FL;
+    int n_FR = encoder.FR;
+    int n_BL = encoder.BL;
+    int n_BR = encoder.BR;
+
+    vel.v_FL = float(n_FL - n_FL_prev) * dx_qrt / dt;
+    vel.v_FR = float(n_FR - n_FR_prev) * dx_qrt / dt;
+    vel.v_BL = float(n_BL - n_BL_prev) * dx_qrt / dt;
+    vel.v_BR = float(n_BR - n_BR_prev) * dx_qrt / dt;
+    vel.v_time = millis();
+
+    // update old data
+    n_FL_prev = n_FL;
+    n_FR_prev = n_FR;
+    n_BL_prev = n_BL;
+    n_BR_prev = n_BR;
+
+    return vel;
+
 }
 
 void Car::initEncoders() {
@@ -411,3 +474,4 @@ int Car::getEncoderBL() {
 int Car::getEncoderBR() {
   return BR_count;
 }
+
