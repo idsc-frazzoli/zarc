@@ -56,7 +56,7 @@ class Car {
     void incBL();
     void calcThrottle();
     void calcSteering();
-    barc::Velocity calcVelocity(barc::Encoder encoder, volatile unsigned long dt);
+    barc::Velocity calcVelocity();
     // Velocity method
     /*float calcVelocityFL();
     float calcVelocityFR();
@@ -73,14 +73,13 @@ class Car {
     const int MOTOR_PIN = 10;
     const int SERVO_PIN= 11;
 
-    const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+    /*const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
     const double pi = 3.1415926535897;
     const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
-    int n_FL_prev;
-    int n_FR_prev;
-    int n_BL_prev;
-    int n_BR_prev;
-
+    int n_FL_prev = 0;
+    int n_FR_prev = 0;
+    int n_BL_prev = 0;
+    int n_BR_prev = 0;*/
 
     // Car properties
     // unclear what this is for
@@ -180,6 +179,15 @@ void calcThrottleCallback() {
 volatile unsigned long dt;
 volatile unsigned long t0;
 
+// Variables for calcVelocity
+const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+const double pi = 3.1415926535897;
+const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
+int n_FL_prev = 0;
+int n_FR_prev = 0;
+int n_BL_prev = 0;
+int n_BR_prev = 0;
+
 // Global message variables
 // Encoder, RC Inputs, Electronic Control Unit, Ultrasound
 barc::ECU ecu;
@@ -195,6 +203,7 @@ ros::Publisher pub_rc_inputs("rc_inputs", &rc_inputs);
 ros::Publisher pub_ultrasound("ultrasound", &ultrasound);
 //add velocity with topic name "velocity"
 ros::Publisher pub_velocity("velocity",&velocity);
+//ros::Publisher pub_velocity= nh.advertise<barc::Velocity>("velocity", 1);
 //ros::Subscriber<barc::ECU> sub_ecu("ecu_pwm", ecuCallback);
 //ros::Subscriber<barc::ECU> sub_ecu("custom_output", ecuCallback);
 ros::Subscriber<barc::ECU> sub_ecu("example", ecuCallback);
@@ -217,10 +226,10 @@ void setup()
   car.initRCInput();
   car.initActuators();
 
-  n_FL_prev = 0;
+  /*n_FL_prev = 0;
   n_FR_prev = 0;
   n_BL_prev = 0;
-  n_BR_prev = 0;
+  n_BR_prev = 0;*/
 
   // Start ROS node
   nh.initNode();
@@ -260,7 +269,10 @@ void loop() {
     pub_encoder.publish(&encoder);
 
     // calculate velocity
-    velocity = calcVelocity();
+    velocity = car.calcVelocity();
+
+   // publish velocity
+    pub_velocity.publish(&velocity);
 
     rc_inputs.motor = car.getRCThrottle();
     rc_inputs.servo = car.getRCSteering();
@@ -313,7 +325,7 @@ float Car::saturateServo(float x) {
 Velocity function
 **************************************************************************/
 
-barc::Velocity calcVelocity(){
+barc::Velocity Car::calcVelocity(){
 
     barc::Velocity vel;
 
@@ -326,7 +338,7 @@ barc::Velocity calcVelocity(){
     vel.v_FR = float(n_FR - n_FR_prev) * dx_qrt / dt;
     vel.v_BL = float(n_BL - n_BL_prev) * dx_qrt / dt;
     vel.v_BR = float(n_BR - n_BR_prev) * dx_qrt / dt;
-    vel.v_time = millis();
+    //vel.v_time = millis();
 
     // update old data
     n_FL_prev = n_FL;
