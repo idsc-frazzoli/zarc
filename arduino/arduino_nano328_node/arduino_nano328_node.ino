@@ -34,6 +34,7 @@ CAR CLASS DEFINITION (would like to refactor into car.cpp and car.h but can't fi
 **************************************************************************/
 class Car {
   public:
+    void initVelocity();
     void initEncoders();
     void initRCInput();
     void initActuators();
@@ -180,13 +181,13 @@ volatile unsigned long dt;
 volatile unsigned long t0;
 
 // Variables for calcVelocity
-const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+/*const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
 const double pi = 3.1415926535897;
 const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
 int n_FL_prev = 0;
 int n_FR_prev = 0;
 int n_BL_prev = 0;
-int n_BR_prev = 0;
+int n_BR_prev = 0;*/
 
 // Global message variables
 // Encoder, RC Inputs, Electronic Control Unit, Ultrasound
@@ -225,7 +226,7 @@ void setup()
   car.initEncoders();
   car.initRCInput();
   car.initActuators();
-
+  car.initVelocity();
   /*n_FL_prev = 0;
   n_FR_prev = 0;
   n_BL_prev = 0;
@@ -276,6 +277,8 @@ void loop() {
 
     rc_inputs.motor = car.getRCThrottle();
     rc_inputs.servo = car.getRCSteering();
+
+    // publish rc_input
     pub_rc_inputs.publish(&rc_inputs);
 
     // publish ultra-sound measurement
@@ -348,6 +351,16 @@ barc::Velocity Car::calcVelocity(){
 
     return vel;
 
+}
+
+void Car::initVelocity() {
+  const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+  const double pi = 3.1415926535897;
+  const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
+  int n_FL_prev = 0;
+  int n_FR_prev = 0;
+  int n_BL_prev = 0;
+  int n_BR_prev = 0;
 }
 
 void Car::initEncoders() {
