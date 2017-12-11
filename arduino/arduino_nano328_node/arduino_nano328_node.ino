@@ -204,9 +204,9 @@ ros::Publisher pub_ultrasound("ultrasound", &ultrasound);
 //add velocity with topic name "velocity"
 ros::Publisher pub_velocity("velocity",&velocity);
 //ros::Publisher pub_velocity= nh.advertise<barc::Velocity>("velocity", 1);
-//ros::Subscriber<barc::ECU> sub_ecu("ecu_pwm", ecuCallback);
+ros::Subscriber<barc::ECU> sub_ecu("ecu_pwm", ecuCallback);
 //ros::Subscriber<barc::ECU> sub_ecu("custom_output", ecuCallback);
-ros::Subscriber<barc::ECU> sub_ecu("example", ecuCallback);
+//ros::Subscriber<barc::ECU> sub_ecu("example", ecuCallback);
 
 // Set up ultrasound sensors
 /*
