@@ -16,16 +16,16 @@ enc_log::EncDataLogger::EncDataLogger(int buffSize, std::string outFilename, std
 
 void enc_log::EncDataLogger::msgCallback(msgPtr_t msg) {
 
-    if (m_timeOffset < 0)
-        m_timeOffset = msg->time;
+//    if (m_timeOffset < 0)
+//        m_timeOffset = msg->time;
 
     std::vector<double> data;
 
-    data.push_back(msg->time - m_timeOffset);
-    data.push_back(msg->FL);
-    data.push_back(msg->FR);
-    data.push_back(msg->BL);
-    data.push_back(msg->BR);
+    //data.push_back(msg->time - m_timeOffset);
+    data.push_back(msg->v_FL);
+    data.push_back(msg->v_FR);
+    data.push_back(msg->v_BL);
+    data.push_back(msg->v_BR);
 
     addToBuff(data);
 }
