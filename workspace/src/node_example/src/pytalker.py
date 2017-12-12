@@ -11,7 +11,7 @@ import rospy
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 
 # Import custom message data and dynamic reconfigure variables.
-from node_example.msg import ECU
+from node_example.msg import GUI_inputs
 from node_example.cfg import nodeExampleConfig as ConfigType
 
 class NodeExample(object):
@@ -26,7 +26,7 @@ class NodeExample(object):
         # Create a dynamic reconfigure server.
         self.server = DynamicReconfigureServer(ConfigType, self.reconfigure_cb)
         # Create a publisher for our custom message.
-        self.pub = rospy.Publisher('example', ECU, queue_size=10)
+        self.pub = rospy.Publisher('gui_inputs', GUI_inputs, queue_size=10)
         # Initialize message variables.
         self.enable = rospy.get_param('~enable', True)
         self.int_motor = rospy.get_param('~motor', 90)
@@ -44,14 +44,14 @@ class NodeExample(object):
         """
         if not self.enable:
             # reset msg to "90" when enable unselected
-            msg = ECU()
+            msg = GUI_inputs()
             msg.motor = 90
             msg.servo = 90
             self.pub.publish(msg)
             return
 
         # Set the message type to publish as our custom message.
-        msg = ECU()
+        msg = GUI_inputs()
         # Assign message fields to values from the parameter server.
         msg.motor = rospy.get_param('~motor', self.int_motor)
         msg.servo = rospy.get_param('~servo', self.int_servo)

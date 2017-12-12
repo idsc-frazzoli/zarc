@@ -183,6 +183,7 @@ volatile unsigned long t0;
 // Encoder, RC Inputs, Electronic Control Unit, Ultrasound
 barc::ECU ecu;
 barc::RC_inputs rc_inputs;
+//barc::ECU rc_inputs;
 barc::Encoder encoder;
 //barc::Ultrasound ultrasound;
 barc::Velocity velocity;
@@ -464,8 +465,9 @@ uint8_t Car::getRCSteering() {
 }
 
 bool Car::getRCFlag() {
-  uint8_t pwm = microseconds2PWM(throttleIn);
-  if(pwm > 170)
+  uint8_t pwm_throttle = microseconds2PWM(throttleIn);
+  uint8_t pwm_steering = microseconds2PWM(steeringIn);  
+  if(pwm_throttle > 93 || pwm_throttle < 87 || pwm_steering > 93 || pwm_steering < 87)
   RC_FLAG = true;
   else RC_FLAG = false;
   return RC_FLAG;

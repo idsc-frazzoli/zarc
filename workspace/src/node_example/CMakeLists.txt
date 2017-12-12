@@ -5,7 +5,7 @@ find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure message_generation r
 
 add_message_files(
   FILES
-  ECU.msg
+  GUI_inputs.msg
 )
 
 generate_messages(
