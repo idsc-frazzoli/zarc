@@ -29,7 +29,7 @@ def rc_inputs_callback(data):
     global throttle, steering, flag
     throttle = data.motor
     steering = data.servo
-	flag = data.control_flag
+    flag = data.control_flag
 
 def main_auto():
     global throttle, steering, flag
@@ -46,18 +46,20 @@ def main_auto():
 
     throttle = 90
     steering = 90
-	flag = False
+    flag = False
 	
 
     # main loop
     while not is_shutdown():
-		if flag == True:
-		    ecu_cmd = ECU(throttle, steering)
-		    
-		else: ecu_cmd = (110,110)
- 
-	nh.publish(ecu_cmd)
-	rate.sleep()
+        if flag is False:
+            ecu_cmd = ECU(throttle, steering)
+        else: 
+            throttle = 110
+            steering = 110
+            ecu_cmd = (throttle,steering)
+
+        nh.publish(ecu_cmd)
+        rate.sleep()
 
 #############################################################
 if __name__ == '__main__':
