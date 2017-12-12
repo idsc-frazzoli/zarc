@@ -26,12 +26,13 @@ from numpy import pi
 import rospy
 
 def rc_inputs_callback(data):
-    global throttle, steering
+    global throttle, steering, flag
     throttle = data.motor
     steering = data.servo
+	flag = data.control_flag
 
 def main_auto():
-    global throttle, steering
+    global throttle, steering, flag
 
     # initialize the ROS node
     init_node('manual_control', anonymous=True)
@@ -45,12 +46,18 @@ def main_auto():
 
     throttle = 90
     steering = 90
+	flag = False
+	
 
     # main loop
     while not is_shutdown():
-        ecu_cmd = ECU(throttle, steering)
-        nh.publish(ecu_cmd)
-        rate.sleep()
+		if flag == True:
+		    ecu_cmd = ECU(throttle, steering)
+		    
+		else: ecu_cmd = (110,110)
+ 
+	nh.publish(ecu_cmd)
+	rate.sleep()
 
 #############################################################
 if __name__ == '__main__':

@@ -21,10 +21,11 @@ WARNING:
 
 // include libraries
 #include <ros.h>
-#include <barc/Ultrasound.h>
+//#include <barc/Ultrasound.h>
 #include <barc/Encoder.h>
 #include <barc/ECU.h>
 #include <barc/Velocity.h>
+#include <barc/RC_inputs.h>
 #include <Servo.h>
 //#include "Maxbotix.h"
 #include <EnableInterrupt.h>
@@ -34,7 +35,7 @@ CAR CLASS DEFINITION (would like to refactor into car.cpp and car.h but can't fi
 **************************************************************************/
 class Car {
   public:
-    void initVelocity();
+    //void initVelocity();
     void initEncoders();
     void initRCInput();
     void initActuators();
@@ -46,6 +47,7 @@ class Car {
     // Getters
     uint8_t getRCThrottle();
     uint8_t getRCSteering();
+    boolean getRCFlag();
     int getEncoderFL();
     int getEncoderFR();
     int getEncoderBL();
@@ -58,11 +60,7 @@ class Car {
     void calcThrottle();
     void calcSteering();
     barc::Velocity calcVelocity();
-    // Velocity method
-    /*float calcVelocityFL();
-    float calcVelocityFR();
-    float calcVelocityBL();
-    float calcVelocityBR();*/
+
   private:
     // Pin assignments
     const int ENC_FL_PIN = 2;
@@ -74,13 +72,13 @@ class Car {
     const int MOTOR_PIN = 10;
     const int SERVO_PIN= 11;
 
-    /*const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
+    const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
     const double pi = 3.1415926535897;
     const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
     int n_FL_prev = 0;
     int n_FR_prev = 0;
     int n_BL_prev = 0;
-    int n_BR_prev = 0;*/
+    int n_BR_prev = 0;
 
     // Car properties
     // unclear what this is for
@@ -110,6 +108,7 @@ class Car {
     Servo steering;
 
     // Utility variables to handle RC and encoder inputs
+    boolean RC_FLAG;
     volatile uint8_t updateFlagsShared;
     uint8_t updateFlags;
     const int THROTTLE_FLAG = 1;
@@ -180,28 +179,19 @@ void calcThrottleCallback() {
 volatile unsigned long dt;
 volatile unsigned long t0;
 
-// Variables for calcVelocity
-/*const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
-const double pi = 3.1415926535897;
-const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
-int n_FL_prev = 0;
-int n_FR_prev = 0;
-int n_BL_prev = 0;
-int n_BR_prev = 0;*/
-
 // Global message variables
 // Encoder, RC Inputs, Electronic Control Unit, Ultrasound
 barc::ECU ecu;
-barc::ECU rc_inputs;
+barc::RC_inputs rc_inputs;
 barc::Encoder encoder;
-barc::Ultrasound ultrasound;
+//barc::Ultrasound ultrasound;
 barc::Velocity velocity;
 
 ros::NodeHandle nh;
 
 ros::Publisher pub_encoder("encoder", &encoder);
 ros::Publisher pub_rc_inputs("rc_inputs", &rc_inputs);
-ros::Publisher pub_ultrasound("ultrasound", &ultrasound);
+//ros::Publisher pub_ultrasound("ultrasound", &ultrasound);
 //add velocity with topic name "velocity"
 ros::Publisher pub_velocity("velocity",&velocity);
 //ros::Publisher pub_velocity= nh.advertise<barc::Velocity>("velocity", 1);
@@ -226,11 +216,6 @@ void setup()
   car.initEncoders();
   car.initRCInput();
   car.initActuators();
-  car.initVelocity();
-  /*n_FL_prev = 0;
-  n_FR_prev = 0;
-  n_BL_prev = 0;
-  n_BR_prev = 0;*/
 
   // Start ROS node
   nh.initNode();
@@ -238,7 +223,7 @@ void setup()
   // Publish and subscribe to topics
   nh.advertise(pub_encoder);
   nh.advertise(pub_rc_inputs);
-  nh.advertise(pub_ultrasound);
+  //nh.advertise(pub_ultrasound);
   // Publish velocity
   nh.advertise(pub_velocity);
   nh.subscribe(sub_ecu);
@@ -275,6 +260,7 @@ void loop() {
    // publish velocity
     pub_velocity.publish(&velocity);
 
+    rc_inputs.control_flag = car.getRCFlag();
     rc_inputs.motor = car.getRCThrottle();
     rc_inputs.servo = car.getRCSteering();
 
@@ -351,16 +337,6 @@ barc::Velocity Car::calcVelocity(){
 
     return vel;
 
-}
-
-void Car::initVelocity() {
-  const float r_tire = 0.038; //radius from tire center to perimeter along magnets [m]
-  const double pi = 3.1415926535897;
-  const double dx_qrt = 2.0 * pi * r_tire / 4.0;  //distance along quarter tire edge [m]
-  int n_FL_prev = 0;
-  int n_FR_prev = 0;
-  int n_BL_prev = 0;
-  int n_BR_prev = 0;
 }
 
 void Car::initEncoders() {
@@ -485,6 +461,14 @@ uint8_t Car::getRCThrottle() {
 }
 uint8_t Car::getRCSteering() {
   return microseconds2PWM(steeringIn);
+}
+
+bool Car::getRCFlag() {
+  uint8_t pwm = microseconds2PWM(throttleIn);
+  if(pwm > 110)
+  RC_FLAG = true;
+  else RC_FLAG = false;
+  return RC_FLAG;
 }
 
 int Car::getEncoderFL() {
