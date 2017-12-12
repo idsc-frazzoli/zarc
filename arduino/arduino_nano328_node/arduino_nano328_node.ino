@@ -371,13 +371,13 @@ void Car::armActuators() {
 void Car::writeToActuators(const barc::ECU& ecu) {
   float motorCMD = saturateMotor(ecu.motor);
   float servoCMD = saturateServo(ecu.servo);
-  motor.writeMicroseconds( (uint16_t) (1500.0 + (motorCMD-90.0)*1000.0/180.0) );
+  motor.writeMicroseconds( (uint16_t) (1500.0 + (motorCMD-90.0)*980.0/180.0) );
   steering.write(servoCMD);
 }
 
 uint8_t Car::microseconds2PWM(uint16_t microseconds) {
   // Scales RC pulses from 1000 - 2000 microseconds to 0 - 180 PWM angles
-  uint16_t pwm = (microseconds - 1000.0)/1000.0*180;
+  uint16_t pwm = (microseconds - 980.0)/980.0*180;
   return static_cast<uint8_t>(pwm);
 }
 
@@ -465,7 +465,7 @@ uint8_t Car::getRCSteering() {
 
 bool Car::getRCFlag() {
   uint8_t pwm = microseconds2PWM(throttleIn);
-  if(pwm > 110)
+  if(pwm > 170)
   RC_FLAG = true;
   else RC_FLAG = false;
   return RC_FLAG;
