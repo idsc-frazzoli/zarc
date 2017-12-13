@@ -55,12 +55,22 @@ def main_auto():
             ecu_cmd = ECU(throttle, steering)
             nh.publish(ecu_cmd)
             rate.sleep()
+<<<<<<< HEAD
         else: 
             throttle = 105
             steering = 120
             ecu_cmd = ECU(throttle, steering)
             nh.publish(ecu_cmd)
             rate.sleep()
+=======
+        else:
+            throttle = 110
+            steering = 110
+            ecu_cmd = (throttle,steering)
+            nh.publish(ecu_cmd)
+            rate.sleep()
+
+>>>>>>> 906cda95ea43b38ab767ba7f4bab351124d647fe
 
 #############################################################
 if __name__ == '__main__':
