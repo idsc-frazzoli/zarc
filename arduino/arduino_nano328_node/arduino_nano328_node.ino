@@ -468,7 +468,7 @@ bool Car::getRCFlag() {
   uint8_t pwm_throttle = microseconds2PWM(throttleIn);
   uint8_t pwm_steering = microseconds2PWM(steeringIn);  
   if(pwm_throttle > 93 || pwm_throttle < 87 || pwm_steering > 93 || pwm_steering < 87)
-  RC_FLAG = true;
+    RC_FLAG = true;
   else RC_FLAG = false;
   return RC_FLAG;
 }
