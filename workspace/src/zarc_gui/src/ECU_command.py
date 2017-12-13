@@ -11,8 +11,8 @@ import rospy
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 
 # Import custom message data and dynamic reconfigure variables.
-from node_example.msg import GUI_inputs
-from node_example.cfg import nodeExampleConfig as ConfigType
+from zarc_gui.msg import GUI_inputs
+from zarc_gui.cfg import zarcGUIConfig as ConfigType
 
 class NodeExample(object):
     '''
@@ -84,7 +84,7 @@ class NodeExample(object):
 # Main function.
 if __name__ == '__main__':
     # Initialize the node and name it.
-    rospy.init_node('pytalker')
+    rospy.init_node('ECU_command')
     # Go to class functions that do all the heavy lifting. Do error checking.
     try:
         NodeExample()

@@ -8,7 +8,7 @@ Example Python node to listen on a specific topic.
 import rospy
 
 # Import custom message data.
-from node_example.msg import ECU
+from zarc_gui.msg import GUI_inputs
 
 def callback(data):
     '''
@@ -23,7 +23,7 @@ def listener():
     '''
     # Create a subscriber with appropriate topic, custom message and name of
     # callback function.
-    rospy.Subscriber('example', ECU, callback)
+    rospy.Subscriber('gui_inputs', GUI_inputs, callback)
     # Wait for messages on topic, go to callback function when new messages
     # arrive.
     rospy.spin()
@@ -31,6 +31,6 @@ def listener():
 # Main function.
 if __name__ == '__main__':
     # Initialize the node and name it.
-    rospy.init_node('pylistener')
+    rospy.init_node('ECU_listen')
     # Go to the main loop.
     listener()

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(node_example)
+project(zarc_gui)
 
 find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure message_generation roscpp rosgraph_msgs rospy std_msgs)
 
@@ -14,7 +14,7 @@ generate_messages(
 )
 
 generate_dynamic_reconfigure_options(
-  cfg/nodeExample.cfg
+  cfg/zarc_gui.cfg
 )
 
 catkin_package(
@@ -23,7 +23,7 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-install(PROGRAMS src/pylistener.py src/pytalker.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(PROGRAMS src/ECU_listen.py src/ECU_command.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
 install(DIRECTORY launch
