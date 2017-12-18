@@ -29,7 +29,7 @@ class NodeExample(object):
         # Create a publisher for our custom message.
         self.pub = rospy.Publisher('gui_inputs', GUI_inputs, queue_size=10)
         # Initialize message variables.
-        self.enable = rospy.get_param('~enable', True)
+        self.enable = rospy.get_param('~enable', False)
         self.int_motor = rospy.get_param('~motor', 90)
         self.int_servo = rospy.get_param('~servo', 90)
         self.T = 5
@@ -64,7 +64,7 @@ class NodeExample(object):
         msg.servo = -30/self.T * self.t + 90
         if msg.servo < 0:
             msg.servo = 0
-        print msg.servo
+        #print msg.servo
 
 
         # Fill in custom
