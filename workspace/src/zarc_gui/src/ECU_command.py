@@ -14,6 +14,7 @@ from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from zarc_gui.msg import GUI_inputs
 from zarc_gui.cfg import zarcGUIConfig as ConfigType
 
+
 class NodeExample(object):
     '''
     Node example class.
@@ -21,8 +22,8 @@ class NodeExample(object):
     def __init__(self):
         # Get the private namespace parameters from the parameter server:
         # set from either command line or launch file.
-        rate = rospy.get_param('~rate', 1.0)
-        rospy.loginfo('rate = %f', rate)
+        self.rate = rospy.get_param('~rate', 20.0)
+        rospy.loginfo('rate = %f', self.rate)
         # Create a dynamic reconfigure server.
         self.server = DynamicReconfigureServer(ConfigType, self.reconfigure_cb)
         # Create a publisher for our custom message.
@@ -31,9 +32,11 @@ class NodeExample(object):
         self.enable = rospy.get_param('~enable', True)
         self.int_motor = rospy.get_param('~motor', 90)
         self.int_servo = rospy.get_param('~servo', 90)
+        self.T = 5
+        self.t = 0
 
         # Create a timer to go to a callback at a specified interval.
-        rospy.Timer(rospy.Duration(1 / rate), self.timer_cb)
+        rospy.Timer(rospy.Duration(1 / self.rate), self.timer_cb)
 
         # Allow ROS to go to all callbacks.
         rospy.spin()
@@ -48,13 +51,21 @@ class NodeExample(object):
             msg.motor = 90
             msg.servo = 90
             self.pub.publish(msg)
+            self.t = 0
             return
+        else:
+            self.t = self.t + 1/self.rate
 
         # Set the message type to publish as our custom message.
         msg = GUI_inputs()
         # Assign message fields to values from the parameter server.
         msg.motor = rospy.get_param('~motor', self.int_motor)
-        msg.servo = rospy.get_param('~servo', self.int_servo)
+        #msg.servo = rospy.get_param('~servo', self.int_servo)
+        msg.servo = -30/self.T * self.t + 90
+        if msg.servo < 0:
+            msg.servo = 0
+        print msg.servo
+
 
         # Fill in custom
         # message variables with values updated from dynamic
