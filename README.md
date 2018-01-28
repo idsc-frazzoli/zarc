@@ -10,6 +10,7 @@ The primary folders in this repository include
   * Overview about the mechanical, electrical, and software deign of the vehicle. Descriptions of the vehicle models used for some control algorithms
 * CAD
   * DWX files for fabricating the deck and side brackets for the chassis, and STL files for fabricating the sensor mounts (e.g. hall effect sensor, camera, ultrasound) and the cover for the odroid.
+  * Custom ZARC CAD files have been added including the front and rear encoder mounts, ZARC mounting circuit and ZARC mount deck
 * Dator
   * Web server for cloud robotics. Provides a standard way to record data and events from one or more local computers for later analysis. Based on [this repo](https://github.com/bwootton/Dator) from Bruce Wooton
 * arduino
@@ -18,6 +19,7 @@ The primary folders in this repository include
   * Bash programs that set up environment variables and launch the local server upon boot
 * MATLAB
   * Useful MATLAB scripts for processing ROS bag file. The bag files store all the message data (time stamped sensor measurements, actuator commands, etc) during an experiment
+  * ZARC scripts have been added to visualize outputs from the IMU and encoders, as well as scripts needed to visualize data from the VICON motion capture system
 * workspace
   * **Robotic Operating System (ROS)** workspace that contains the barc package. This package holds the source code to control the vehicle using the ROS framework
 
