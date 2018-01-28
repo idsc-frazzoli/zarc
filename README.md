@@ -8,6 +8,7 @@ This site is home to the repository. The main site for the project is [here](htt
 The primary folders in this repository include
 * docs
   * Overview about the mechanical, electrical, and software deign of the vehicle. Descriptions of the vehicle models used for some control algorithms
+  * Assembly instructions required to replicate the ZARC car platform
 * CAD
   * DWX files for fabricating the deck and side brackets for the chassis, and STL files for fabricating the sensor mounts (e.g. hall effect sensor, camera, ultrasound) and the cover for the odroid.
   * Custom ZARC CAD files have been added including the front and rear encoder mounts, ZARC mounting circuit and ZARC mount deck
