@@ -20,6 +20,6 @@ imu_logger:
 enc_logger:
  buffSize: 10000
  outFileName: "encOutput"
- rosTopicName: "forward_vel"
+ rosTopicName: "velocity"
  rosQueueSize: 1
- csvHeader: "time, velFL, velFR, velBL, velBR" 
+ csvHeader: "velFL, velFR, velBL, velBR" 

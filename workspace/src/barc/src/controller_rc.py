@@ -21,6 +21,7 @@
 from rospy import init_node, Subscriber, Publisher, get_param
 from rospy import Rate, is_shutdown, ROSInterruptException, spin, on_shutdown
 from barc.msg import ECU
+from barc.msg import RC_inputs
 from numpy import pi
 import rospy
 
@@ -34,7 +35,7 @@ def main_auto():
 
     # initialize the ROS node
     init_node('manual_control', anonymous=True)
-    Subscriber('rc_inputs', ECU, rc_inputs_callback)
+    Subscriber('rc_inputs', RC_inputs, rc_inputs_callback)
     nh = Publisher('ecu_pwm', ECU, queue_size = 10)
 
     # set node rate

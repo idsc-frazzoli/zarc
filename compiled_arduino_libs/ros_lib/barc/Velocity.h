@@ -20,15 +20,12 @@ namespace barc
       _v_BL_type v_BL;
       typedef float _v_BR_type;
       _v_BR_type v_BR;
-      typedef double _v_time_type;
-      _v_time_type v_time;
 
     Velocity():
       v_FL(0),
       v_FR(0),
       v_BL(0),
-      v_BR(0),
-      v_time(0)
+      v_BR(0)
     {
     }
 
@@ -75,20 +72,6 @@ namespace barc
       *(outbuffer + offset + 2) = (u_v_BR.base >> (8 * 2)) & 0xFF;
       *(outbuffer + offset + 3) = (u_v_BR.base >> (8 * 3)) & 0xFF;
       offset += sizeof(this->v_BR);
-      union {
-        double real;
-        uint64_t base;
-      } u_v_time;
-      u_v_time.real = this->v_time;
-      *(outbuffer + offset + 0) = (u_v_time.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_v_time.base >> (8 * 1)) & 0xFF;
-      *(outbuffer + offset + 2) = (u_v_time.base >> (8 * 2)) & 0xFF;
-      *(outbuffer + offset + 3) = (u_v_time.base >> (8 * 3)) & 0xFF;
-      *(outbuffer + offset + 4) = (u_v_time.base >> (8 * 4)) & 0xFF;
-      *(outbuffer + offset + 5) = (u_v_time.base >> (8 * 5)) & 0xFF;
-      *(outbuffer + offset + 6) = (u_v_time.base >> (8 * 6)) & 0xFF;
-      *(outbuffer + offset + 7) = (u_v_time.base >> (8 * 7)) & 0xFF;
-      offset += sizeof(this->v_time);
       return offset;
     }
 
@@ -139,21 +122,6 @@ namespace barc
       u_v_BR.base |= ((uint32_t) (*(inbuffer + offset + 3))) << (8 * 3);
       this->v_BR = u_v_BR.real;
       offset += sizeof(this->v_BR);
-      union {
-        double real;
-        uint64_t base;
-      } u_v_time;
-      u_v_time.base = 0;
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 2))) << (8 * 2);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 3))) << (8 * 3);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 4))) << (8 * 4);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 5))) << (8 * 5);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 6))) << (8 * 6);
-      u_v_time.base |= ((uint64_t) (*(inbuffer + offset + 7))) << (8 * 7);
-      this->v_time = u_v_time.real;
-      offset += sizeof(this->v_time);
      return offset;
     }
 
